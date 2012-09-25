@@ -31,6 +31,9 @@ $app = new Slim();
  $app = new Slim();
  $app->get('/hello/:name', 'myFunction');
  function myFunction($name) { echo "Hello, $name"; }
+
+  $app->get('/cadastro/:name', 'cadastro');
+ function cadastro($name) { echo "Cadastro, $name"; }
  /*
  * The routes below work with PHP >= 5.3.
  */
@@ -138,19 +141,123 @@ $app->get('/', function () {
 EOT;
     echo $template;
 });
-
-//POST route
-$app->post('/post', function () {
+// Create User
+$app->post('/usuario', function () {
     echo 'This is a POST route';
 });
 
-//PUT route
-$app->put('/put', function () {
+// Retrive User
+$app->get('/usuario/:id', function () {
+    echo 'This is a GET route';
+});
+
+// Update User
+$app->put('/usuario/:id', function () {
     echo 'This is a PUT route';
 });
 
-//DELETE route
-$app->delete('/delete', function () {
+// Delete user
+$app->delete('/usuario/:id', function () {
+    echo 'This is a DELETE route';
+});
+
+// Create Friendship
+$app->post('/amizade', function () {
+    echo 'This is a POST route';
+});
+
+// Retrive Friendship
+$app->get('/amizade/:id', function () {
+    echo 'This is a GET route';
+});
+
+// Update Friendship
+$app->put('/amizade/:id', function () {
+    echo 'This is a PUT route';
+});
+
+// Delete Friendship
+$app->delete('/amizade/:id', function () {
+    echo 'This is a DELETE route';
+});
+
+// Create Lending
+$app->post('/emprestimo', function () {
+    echo 'This is a POST route';
+});
+
+// Retrive Lending
+$app->get('/emprestimo/:id', function () {
+    echo 'This is a GET route';
+});
+
+// Update Lending
+$app->put('/emprestimo/:id', function () {
+    echo 'This is a PUT route';
+});
+
+// Delete Lending
+$app->delete('/emprestimo/:id', function () {
+    echo 'This is a DELETE route';
+});
+
+// Create Book
+$app->post('/livro', function () {
+    echo 'This is a POST route';
+});
+
+// Retrive Book
+$app->get('/livro/:id', function () {
+    echo 'This is a GET route';
+});
+
+// Update Book
+$app->put('/livro/:id', function () {
+    echo 'This is a PUT route';
+});
+
+// Delete Book
+$app->delete('/livro/:id', function () {
+    echo 'This is a DELETE route';
+});
+
+// Create Game
+$app->post('/jogo', function () {
+    echo 'This is a POST route';
+});
+
+// Retrive Game
+$app->get('/jogo/:id', function () {
+    echo 'This is a GET route';
+});
+
+// Update Game
+$app->put('/jogo/:id', function () {
+    echo 'This is a PUT route';
+});
+
+// Delete Game
+$app->delete('/jogo/:id', function () {
+    echo 'This is a DELETE route';
+});
+
+// Create Film
+$app->post('/filme', function () {
+    echo 'This is a POST route';
+});
+
+// Retrive Film
+$app->get('/filme/:id', function () {
+    echo 'This is a GET route';
+});
+
+// Update Film
+$app->put('/filme/:id', function () {
+    echo 'This is a PUT route';
+});
+
+// Delete Film
+$app->delete('/filme/:id', function () {
     echo 'This is a DELETE route';
 });
 
