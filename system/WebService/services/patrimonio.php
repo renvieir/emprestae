@@ -1,18 +1,21 @@
 <?php
 
 $app->get("/getUserObjs/:userID", "getUserObjs");
-$app->get("/addUserObj/:userID/:objID/:objTitulo", "addUserObj");
-$app->get("/removeUserObj/:userID/:objID/:objTitulo", "removeUserObj");
+$app->get("/addUserObj/:userID/:objID/:objType", "addUserObj");
+$app->get("/removeUserObj/:userID/:objID/:objType", "removeUserObj");
 
 /* return object ids in a list */
 function getUserObjs($userID) {
 
-	$tablesPatrimonio = Array("Livro" => "possuiLivro",
-								"Jogo" => "possuiJogo",
-								"Filme" => "possuiFilme");
+	$patrimonio = Array("A" => ["Livro", "possuiLivro"],
+						"B" => ["Jogo", "possuiJogo"],
+						"C" => ["Filme", "possuiFilme"]);
 
+	$response["status"] = 1;
 	$dbh = getConnection();
-	foreach ($tablesPatrimonio as $obj => $possui) {
+
+	foreach ($patrimonio as $p) {
+		$obj = $p[0]; $possui = $p[1];
 		$sql = "select * from $possui where fk_idUser = :userID";
 		$stmt = $dbh->prepare($sql);
 		$stmt->bindParam(":userID", $userID);
@@ -29,36 +32,28 @@ function getUserObjs($userID) {
 	}
 
 	closeConnection($dbh);
-	$response["status"] = 1;
 	echo json_encode($response);
 	return;
 }
 
 function removeUserObj($userId, $objId, $objTitulo) {
 
-	$tablesPatrimonio = Array("Livro" => "possuiLivro",
-								"Jogo" => "possuiJogo",
-								"Filme" => "possuiFilme");
+	$patrimonio = Array("A" => ["Livro", "possuiLivro"],
+						"B" => ["Jogo", "possuiJogo"],
+						"C" => ["Filme", "possuiFilme"]);
 
-	$dbh = getConnection();
-	foreach ($tablesPatrimonio as $obj => $possui) {
-		$sql = "select * from obj$obj where id$obj = :objID and
-													titulo = :objTitulo";
-		$stmt = $dbh->prepare($sql);
-		$stmt->bindParam(":objID", $objId);
-		$stmt->bindParam(":objTitulo", $objTitulo);
-		$stmt->execute();
-		$arr = $stmt->fetchAll(PDO::FETCH_NUM);
-		if(!empty($arr)) break;
-	}
-
-	/* object is not in the stock */
-	if(empty($arr)) {
-		closeConnection($dbh);
+	$objType = strtoupper($objType);
+	/* the objType doesn't exist */
+	if ( !isset($patrimonio[$objType]) ) {
 		$response["status"] = 0;
 		echo json_encode($response);
 		return;
 	}
+
+	$response["status"] = 1;
+	$dbh = getConnection();
+	$obj = $patrimonio[$objType][0];
+	$possui = $patrimonio[$objType][1];
 
 	$sql = "delete from $possui where fk_idUser = :userID and
 														fk_id$obj = :objID";
@@ -68,7 +63,44 @@ function removeUserObj($userId, $objId, $objTitulo) {
 	$stmt->execute();
 
 	closeConnection($dbh);
+	echo json_encode($response);
+	return;
+}
+
+function addUserObj($userId, $objId, $objType) {
+
+	$patrimonio = Array("A" => ["Livro", "possuiLivro"],
+						"B" => ["Jogo", "possuiJogo"],
+						"C" => ["Filme", "possuiFilme"]);
+
+	$objType = strtoupper($objType);
+	/* the objType doesn't exist */
+	if ( !isset($patrimonio[$objType]) ) {
+		$response["status"] = 0;
+		echo json_encode($response);
+		return;
+	}
+
 	$response["status"] = 1;
+	$dbh = getConnection();
+	$obj = $patrimonio[$objType][0];
+	$possui = $patrimonio[$objType][1];
+
+	try {
+		/* if the ids exist in their tables and are not linked, add a new row */
+		$sql = "insert into $possui select idusuario, idJogo from
+					usuario, obj$obj where idusuario = :userID and
+						id$obj = :objID and (select count(*) from $possui where
+							fk_idUser = :userID and fk_idJogo = :objID) = 0";
+		$stmt = $dbh->prepare($sql);
+		$stmt->bindParam(":userID", $userId);
+		$stmt->bindParam(":objID", $objId);
+		$stmt->execute();
+	} catch (PDOException $e) { /* couldn't insert */
+		$response["status"] = 0;
+	}
+
+	closeConnection($dbh);
 	echo json_encode($response);
 	return;
 }

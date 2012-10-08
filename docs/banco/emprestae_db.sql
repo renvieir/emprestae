@@ -98,18 +98,25 @@ DROP TABLE IF EXISTS `emprestae_db`.`emprestimo` ;
 
 CREATE  TABLE IF NOT EXISTS `emprestae_db`.`emprestimo` (
   `idemprestimo` INT NOT NULL AUTO_INCREMENT ,
-  `idamigos` INT NOT NULL ,
+  `fk_idUser1` INT NOT NULL ,
+  `fk_idUser2` INT NOT NULL ,
   `tipoObjeto` VARCHAR(15) NOT NULL ,
-  `idobjeto` INT NOT NULL ,
-  `dtemprestimo` DATETIME NULL ,
-  `dtdevolucao` DATETIME NULL ,
-  `devolvido` TINYINT(1) NULL ,
+  `idObj` INT NOT NULL ,
+  `dtEmprestimo` DATETIME NULL ,
+  `dtDevolucao` DATETIME NULL ,
+  `status` TINYINT(1) NULL ,
   PRIMARY KEY (`idemprestimo`) ,
-  INDEX `idamigos` (`idamigos` ASC) ,
-  CONSTRAINT `idamigos`
-    FOREIGN KEY (`idamigos` )
-    REFERENCES `emprestae_db`.`amizade` (`idamizade` )
+  INDEX `fk_idUsuario1` (`fk_idUser1` ASC) ,
+  INDEX `fk_idUsuario2` (`fk_idUser2` ASC) ,
+  CONSTRAINT `fk_idUsuario1`
+    FOREIGN KEY (`fk_idUser1` )
+    REFERENCES `emprestae_db`.`usuario` (`idusuario` )
     ON DELETE NO ACTION
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_idUsuario2`
+    FOREIGN KEY (`fk_idUser2` )
+    REFERENCES `emprestae_db`.`usuario` (`idusuario` )
+    ON DELETE CASCADE
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
@@ -187,3 +194,105 @@ ENGINE = InnoDB;
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+-- -----------------------------------------------------
+-- Data for table `emprestae_db`.`objLivro`
+-- -----------------------------------------------------
+START TRANSACTION;
+USE `emprestae_db`;
+INSERT INTO `emprestae_db`.`objLivro` (`idLivro`, `titulo`, `autor`, `edicao`, `editora`) VALUES (1, 'l1', 'a1', 1, 'edi1');
+INSERT INTO `emprestae_db`.`objLivro` (`idLivro`, `titulo`, `autor`, `edicao`, `editora`) VALUES (2, 'l2', 'a2', 2, 'edi2');
+INSERT INTO `emprestae_db`.`objLivro` (`idLivro`, `titulo`, `autor`, `edicao`, `editora`) VALUES (3, 'l3', 'a3', 3, 'edi3');
+
+COMMIT;
+
+-- -----------------------------------------------------
+-- Data for table `emprestae_db`.`usuario`
+-- -----------------------------------------------------
+START TRANSACTION;
+USE `emprestae_db`;
+INSERT INTO `emprestae_db`.`usuario` (`idusuario`, `email`, `nome`, `senha`, `addressLat`, `addressLong`) VALUES (1, 'm1', 'n1', 'p1', NULL, NULL);
+INSERT INTO `emprestae_db`.`usuario` (`idusuario`, `email`, `nome`, `senha`, `addressLat`, `addressLong`) VALUES (2, 'm2', 'n2', 'p2', NULL, NULL);
+INSERT INTO `emprestae_db`.`usuario` (`idusuario`, `email`, `nome`, `senha`, `addressLat`, `addressLong`) VALUES (3, 'm3', 'n3', 'p3', NULL, NULL);
+INSERT INTO `emprestae_db`.`usuario` (`idusuario`, `email`, `nome`, `senha`, `addressLat`, `addressLong`) VALUES (4, 'm4', 'n4', 'p4', NULL, NULL);
+INSERT INTO `emprestae_db`.`usuario` (`idusuario`, `email`, `nome`, `senha`, `addressLat`, `addressLong`) VALUES (5, 'm5', 'n5', 'p5', NULL, NULL);
+
+COMMIT;
+
+-- -----------------------------------------------------
+-- Data for table `emprestae_db`.`amizade`
+-- -----------------------------------------------------
+START TRANSACTION;
+USE `emprestae_db`;
+INSERT INTO `emprestae_db`.`amizade` (`idamizade`, `idusuario_a`, `idusuario_b`) VALUES (1, 1, 2);
+INSERT INTO `emprestae_db`.`amizade` (`idamizade`, `idusuario_a`, `idusuario_b`) VALUES (2, 3, 2);
+INSERT INTO `emprestae_db`.`amizade` (`idamizade`, `idusuario_a`, `idusuario_b`) VALUES (3, 3, 1);
+
+COMMIT;
+
+-- -----------------------------------------------------
+-- Data for table `emprestae_db`.`objJogo`
+-- -----------------------------------------------------
+START TRANSACTION;
+USE `emprestae_db`;
+INSERT INTO `emprestae_db`.`objJogo` (`idJogo`, `titulo`, `plataforma`, `produtora`) VALUES (1, 'j1', 'p1', 'pr1');
+INSERT INTO `emprestae_db`.`objJogo` (`idJogo`, `titulo`, `plataforma`, `produtora`) VALUES (2, 'j2', 'p2', 'pr2');
+INSERT INTO `emprestae_db`.`objJogo` (`idJogo`, `titulo`, `plataforma`, `produtora`) VALUES (3, 'j3', 'p3', 'pr3');
+
+COMMIT;
+
+-- -----------------------------------------------------
+-- Data for table `emprestae_db`.`objFilme`
+-- -----------------------------------------------------
+START TRANSACTION;
+USE `emprestae_db`;
+INSERT INTO `emprestae_db`.`objFilme` (`idFilme`, `titulo`, `distribuidora`, `diretor`) VALUES (1, 'f1', 'dis1', 'd1');
+INSERT INTO `emprestae_db`.`objFilme` (`idFilme`, `titulo`, `distribuidora`, `diretor`) VALUES (2, 'f2', 'dis2', 'd2');
+INSERT INTO `emprestae_db`.`objFilme` (`idFilme`, `titulo`, `distribuidora`, `diretor`) VALUES (3, 'f3', 'dis3', 'd3');
+
+COMMIT;
+
+-- -----------------------------------------------------
+-- Data for table `emprestae_db`.`emprestimo`
+-- -----------------------------------------------------
+START TRANSACTION;
+USE `emprestae_db`;
+INSERT INTO `emprestae_db`.`emprestimo` (`idemprestimo`, `fk_idUser1`, `fk_idUser2`, `tipoObjeto`, `idObj`, `dtEmprestimo`, `dtDevolucao`, `status`) VALUES (1, 1, 2, 'B', 2, '2012-12-10', '2012-12-12', 0);
+INSERT INTO `emprestae_db`.`emprestimo` (`idemprestimo`, `fk_idUser1`, `fk_idUser2`, `tipoObjeto`, `idObj`, `dtEmprestimo`, `dtDevolucao`, `status`) VALUES (2, 2, 3, 'C', 1, '2011-9-12', '2011-10-3', 0);
+INSERT INTO `emprestae_db`.`emprestimo` (`idemprestimo`, `fk_idUser1`, `fk_idUser2`, `tipoObjeto`, `idObj`, `dtEmprestimo`, `dtDevolucao`, `status`) VALUES (3, 3, 1, 'A', 3, '2012-1-2', '2012-3-4', 0);
+
+COMMIT;
+
+-- -----------------------------------------------------
+-- Data for table `emprestae_db`.`possuiLivro`
+-- -----------------------------------------------------
+START TRANSACTION;
+USE `emprestae_db`;
+INSERT INTO `emprestae_db`.`possuiLivro` (`fk_idUser`, `fk_idLivro`) VALUES (1, 2);
+INSERT INTO `emprestae_db`.`possuiLivro` (`fk_idUser`, `fk_idLivro`) VALUES (3, 3);
+INSERT INTO `emprestae_db`.`possuiLivro` (`fk_idUser`, `fk_idLivro`) VALUES (2, 2);
+INSERT INTO `emprestae_db`.`possuiLivro` (`fk_idUser`, `fk_idLivro`) VALUES (1, 1);
+
+COMMIT;
+
+-- -----------------------------------------------------
+-- Data for table `emprestae_db`.`possuiJogo`
+-- -----------------------------------------------------
+START TRANSACTION;
+USE `emprestae_db`;
+INSERT INTO `emprestae_db`.`possuiJogo` (`fk_idUser`, `fk_idJogo`) VALUES (2, 3);
+INSERT INTO `emprestae_db`.`possuiJogo` (`fk_idUser`, `fk_idJogo`) VALUES (1, 3);
+INSERT INTO `emprestae_db`.`possuiJogo` (`fk_idUser`, `fk_idJogo`) VALUES (3, 2);
+
+COMMIT;
+
+-- -----------------------------------------------------
+-- Data for table `emprestae_db`.`possuiFilme`
+-- -----------------------------------------------------
+START TRANSACTION;
+USE `emprestae_db`;
+INSERT INTO `emprestae_db`.`possuiFilme` (`fk_idUser`, `fk_idFilme`) VALUES (1, 2);
+INSERT INTO `emprestae_db`.`possuiFilme` (`fk_idUser`, `fk_idFilme`) VALUES (2, 1);
+INSERT INTO `emprestae_db`.`possuiFilme` (`fk_idUser`, `fk_idFilme`) VALUES (3, 1);
+
+COMMIT;

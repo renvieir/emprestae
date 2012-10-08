@@ -6,6 +6,8 @@ $app->get("/getGameInfo/:titulo", "getObjGameInfo");
 $app->get("/removeGame/:titulo", "removeObjGame");
 
 function createObjGame($titulo, $plataforma, $produtora) {
+	
+	global $gameTable;
 
 	/* lendo dados da mensagem com json
 	$request = Slim::getInstance()->request();
@@ -24,8 +26,9 @@ function createObjGame($titulo, $plataforma, $produtora) {
 	*/
 
 	$title = $titulo; $platform = $plataforma; $house = $produtora;
+	$response["status"] = 1;
 	$dbh = getConnection();
-	$sql = "insert into objJogo (titulo, plataforma, produtora) values
+	$sql = "insert into $gameTable (titulo, plataforma, produtora) values
 												(:title, :platform, :house)";
 
 	try {
@@ -35,16 +38,18 @@ function createObjGame($titulo, $plataforma, $produtora) {
 		$stmt->bindParam(":house", $house);
 		$stmt->execute();
 	} catch (PDOException $e) {
-		echo json_encode(returnMsg("status", 0));
+		$response["status"] = 0;
 		return;
 	}
 
 	closeConnection($dbh);
-	echo json_encode(returnMsg("status", 1));
+	echo json_encode($response);
 	return;
 }
 
 function updateObjGame($titulo, $plataforma, $produtora) {
+
+	global $gameTable;
 
 	/* lendo dados da mensagem com json
 	$request = Slim::getInstance()->request();
@@ -63,9 +68,10 @@ function updateObjGame($titulo, $plataforma, $produtora) {
 	*/
 
 	$title = $titulo; $platform = $plataforma; $house = $produtora;
+	$response["status"] = 1;
 	$dbh = getConnection();
-	$sql = "update objJogo set titulo = :title, plataforma = :platform,
-								produtora = :house where titulo = :title";
+	$sql = "update $gameTable set titulo = :title, plataforma = :platform,
+									produtora = :house where titulo = :title";
 
 	$stmt = $dbh->prepare($sql);
 	$stmt->bindParam(":title", $title);
@@ -74,11 +80,13 @@ function updateObjGame($titulo, $plataforma, $produtora) {
 	$stmt->execute();
 
 	closeConnection($dbh);
-	echo json_encode(returnMsg("status", 1));
+	echo json_encode($response);
 	return;
 }
 
 function getObjGameInfo($titulo) {
+
+	global $gameTable;
 
 	/* lendo dados da mensagem com json
 	$request = Slim::getInstance()->request();
@@ -97,14 +105,13 @@ function getObjGameInfo($titulo) {
 
 	$title = $titulo;
 	$dbh = getConnection();
-	$sql = "select * from objJogo where titulo = :title";
+	$sql = "select * from $gameTable where titulo = :title";
 	$stmt = $dbh->prepare($sql);
 	$stmt->bindParam(":title", $title);
 	$stmt->execute();
 
 	/* get all Game information as a associative array */
 	$tmp = $stmt->fetchAll(PDO::FETCH_CLASS);
-
 	if (!empty($tmp)) {
 		foreach ($tmp[0] as $key => $value)
 			$response[$key] = ($value) ? $value: null;
@@ -117,6 +124,8 @@ function getObjGameInfo($titulo) {
 }
 
 function removeObjGame($titulo) {
+
+	global $gameTable;
 
 	/* lendo dados da mensagem com json
 	$request = Slim::getInstance()->request();
@@ -132,15 +141,16 @@ function removeObjGame($titulo) {
 	*/
 
 	$title = $titulo;
+	$response["status"] = 1;
 	$dbh = getConnection();
-	$sql = "delete from objJogo where titulo = :title";
+	$sql = "delete from $gameTable where titulo = :title";
 
 	$stmt = $dbh->prepare($sql);
 	$stmt->bindParam(":title", $title);
 	$stmt->execute();
 
 	closeConnection($dbh);
-	echo json_encode(returnMsg("status", 1));
+	echo json_encode($response);
 	return;
 }
 

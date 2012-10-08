@@ -9,6 +9,8 @@ $app->get("/removeUser/:email", "removeUser");
 
 function createUser($nome, $mail, $pass) {
 
+	global $userTable;
+
 	/* lendo dados da mensagem com json
 	$request = Slim::getInstance()->request();
 	$body = $request->getBody();
@@ -25,8 +27,9 @@ function createUser($nome, $mail, $pass) {
 	*/
 
 	$name = $nome; $email = $mail; $pwd = $pass;
+	$response["status"] = 1;
 	$dbh = getConnection();
-	$sql = "insert into usuario (email, nome, senha) values
+	$sql = "insert into $userTable (email, nome, senha) values
 														(:email, :name, :pwd)";
 
 	try {
@@ -36,16 +39,17 @@ function createUser($nome, $mail, $pass) {
 		$stmt->bindParam(":pwd", $pwd);
 		$stmt->execute();
 	} catch (PDOException $e) {
-		echo json_encode(returnMsg("status", 0));
-		return;
+		$response["status"] = 0;
 	}
 
 	closeConnection($dbh);
-	echo json_encode(returnMsg("status", 1));
+	echo json_encode($response);
 	return;
 }
 
 function updateUser($nome, $mail, $pass) {
+
+	global $userTable;
 
 	/* lendo dados da mensagem com json
 	$request = Slim::getInstance()->request();
@@ -63,8 +67,9 @@ function updateUser($nome, $mail, $pass) {
 	*/
 
 	$name = $nome; $email = $mail; $pwd = $pass;
+	$response["status"] = 1;
 	$dbh = getConnection();
-	$sql = "update usuario set email = :email, nome = :name, senha = :pwd
+	$sql = "update $userTable set email = :email, nome = :name, senha = :pwd
 														where email = :email";
 
 	$stmt = $dbh->prepare($sql);
@@ -74,11 +79,13 @@ function updateUser($nome, $mail, $pass) {
 	$stmt->execute();
 
 	closeConnection($dbh);
-	echo json_encode(returnMsg("status", 1));
+	echo json_encode($response);
 	return;
 }
 
 function getUserInfo($mail) {
+
+	global $userTable;
 
 	/* lendo dados da mensagem com json
 	$request = Slim::getInstance()->request();
@@ -97,7 +104,7 @@ function getUserInfo($mail) {
 
 	$email = $mail;
 	$dbh = getConnection();
-	$sql = "select * from usuario where email = :email";
+	$sql = "select * from $userTable where email = :email";
 	$stmt = $dbh->prepare($sql);
 	$stmt->bindParam(":email", $email);
 	$stmt->execute();
@@ -118,6 +125,8 @@ function getUserInfo($mail) {
 
 function removeUser($mail) {
 
+	global $userTable;
+
 	/* lendo dados da mensagem com json
 	$request = Slim::getInstance()->request();
 	$body = $request->getBody();
@@ -132,15 +141,16 @@ function removeUser($mail) {
 	*/
 
 	$email = $mail;
+	$response["status"] = 1;
 	$dbh = getConnection();
-	$sql = "delete from usuario where email = :email";
+	$sql = "delete from $userTable where email = :email";
 
 	$stmt = $dbh->prepare($sql);
 	$stmt->bindParam(":email", $email);
 	$stmt->execute();
 
 	closeConnection($dbh);
-	echo json_encode(returnMsg("status2", 1));
+	echo json_encode($response);
 	return;
 }
 

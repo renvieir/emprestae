@@ -7,6 +7,8 @@ $app->get("/removeBook/:titulo", "removeObjBook");
 
 function createObjBook($titulo, $autor, $edicao, $editora) {
 
+	global $boojTable;
+
 	/* lendo dados da mensagem com json
 	$request = Slim::getInstance()->request();
 	$body = $request->getBody();
@@ -24,8 +26,9 @@ function createObjBook($titulo, $autor, $edicao, $editora) {
 	*/
 
 	$title = $titulo; $author = $autor; $ed = $edicao; $house = $editora;
+	$response["status"] = 1;
 	$dbh = getConnection();
-	$sql = "insert into objLivro (titulo, autor, edicao, editora) values
+	$sql = "insert into $bookTable (titulo, autor, edicao, editora) values
 												(:title, :author, :ed, :house)";
 
 	try {
@@ -36,16 +39,17 @@ function createObjBook($titulo, $autor, $edicao, $editora) {
 		$stmt->bindParam(":house", $house);
 		$stmt->execute();
 	} catch (PDOException $e) {
-		echo json_encode(returnMsg("status", 0));
-		return;
+		$response["status"] = 0;
 	}
 
 	closeConnection($dbh);
-	echo json_encode(returnMsg("status", 1));
+	echo json_encode($response);
 	return;
 }
 
 function updateObjBook($titulo, $autor, $edicao, $editora) {
+
+	global $boojTable;
 
 	/* lendo dados da mensagem com json
 	$request = Slim::getInstance()->request();
@@ -64,8 +68,9 @@ function updateObjBook($titulo, $autor, $edicao, $editora) {
 	*/
 
 	$title = $titulo; $author = $autor; $ed = $edicao; $house = $editora;
+	$response["status"] = 1;
 	$dbh = getConnection();
-	$sql = "update objLivro set titulo = :title, autor = :author, edicao = :ed,
+	$sql = "update $bookTable set titulo = :title, autor = :author, edicao= :ed,
 									editora = :house where titulo = :title";
 
 	$stmt = $dbh->prepare($sql);
@@ -76,11 +81,13 @@ function updateObjBook($titulo, $autor, $edicao, $editora) {
 	$stmt->execute();
 
 	closeConnection($dbh);
-	echo json_encode(returnMsg("status", 1));
+	echo json_encode($response);
 	return;
 }
 
 function getObjBookInfo($titulo) {
+
+	global $boojTable;
 
 	/* lendo dados da mensagem com json
 	$request = Slim::getInstance()->request();
@@ -99,7 +106,7 @@ function getObjBookInfo($titulo) {
 
 	$title = $titulo;
 	$dbh = getConnection();
-	$sql = "select * from objLivro where titulo = :title";
+	$sql = "select * from $bookTable where titulo = :title";
 	$stmt = $dbh->prepare($sql);
 	$stmt->bindParam(":title", $title);
 	$stmt->execute();
@@ -120,6 +127,8 @@ function getObjBookInfo($titulo) {
 
 function removeObjBook($titulo) {
 
+	global $boojTable;
+
 	/* lendo dados da mensagem com json
 	$request = Slim::getInstance()->request();
 	$body = $request->getBody();
@@ -134,15 +143,16 @@ function removeObjBook($titulo) {
 	*/
 
 	$title = $titulo;
+	$response["status"] = 1;
 	$dbh = getConnection();
-	$sql = "delete from objLivro where titulo = :title";
+	$sql = "delete from $bookTable where titulo = :title";
 
 	$stmt = $dbh->prepare($sql);
 	$stmt->bindParam(":title", $title);
 	$stmt->execute();
 
 	closeConnection($dbh);
-	echo json_encode(returnMsg("status", 1));
+	echo json_encode($response);
 	return;
 }
 

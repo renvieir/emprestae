@@ -43,6 +43,7 @@ require "services/obj_livro.php";
 require "services/obj_filme.php";
 require "services/obj_jogo.php";
 require "services/patrimonio.php";
+require "services/emprestimo.php";
 
 /**
  * Step 4: Run the Slim application

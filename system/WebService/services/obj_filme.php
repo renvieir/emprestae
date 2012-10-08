@@ -1,11 +1,13 @@
 <?php
 
 $app->get("/createFilm/:titulo/:diretor/:distribuidora", "createObjFilm");
-$app->get("/updateFilm/:titulo/:diretor/:distribuidora", "updateObjFilm");
+$app->get("/updateFilm/:titulo/:diretor/:distribuidora", "updateObjFilme");
 $app->get("/getFilmInfo/:titulo", "getObjFilmInfo");
 $app->get("/removeFilm/:titulo", "removeObjFilm");
 
 function createObjFilm($titulo, $diretor, $distribuidora) {
+
+	global $filmTable;
 
 	/* lendo dados da mensagem com json
 	$request = Slim::getInstance()->request();
@@ -24,8 +26,9 @@ function createObjFilm($titulo, $diretor, $distribuidora) {
 	*/
 
 	$title = $titulo; $director = $diretor; $house = $distribuidora;
+	$response["status"] = 1;
 	$dbh = getConnection();
-	$sql = "insert into objFilme (titulo, diretor, distribuidora) values
+	$sql = "insert into $filmTable (titulo, diretor, distribuidora) values
 												(:title, :director, :house)";
 
 	try {
@@ -35,16 +38,17 @@ function createObjFilm($titulo, $diretor, $distribuidora) {
 		$stmt->bindParam(":house", $house);
 		$stmt->execute();
 	} catch (PDOException $e) {
-		echo json_encode(returnMsg("status", 0));
-		return;
+		$response["status"] = 0;
 	}
 
 	closeConnection($dbh);
-	echo json_encode(returnMsg("status", 1));
+	echo json_encode($response);
 	return;
 }
 
 function updateObjFilm($titulo, $diretor, $distribuidora) {
+
+	global $filmTable;
 
 	/* lendo dados da mensagem com json
 	$request = Slim::getInstance()->request();
@@ -63,8 +67,9 @@ function updateObjFilm($titulo, $diretor, $distribuidora) {
 	*/
 
 	$title = $titulo; $director = $diretor; $house = $distribuidora;
+	$response["status"] = 1;
 	$dbh = getConnection();
-	$sql = "update objFilme set titulo = :title, diretor = :director,
+	$sql = "update $filmTable set titulo = :title, diretor = :director,
 								distribuidora = :house where titulo = :title";
 
 	$stmt = $dbh->prepare($sql);
@@ -74,11 +79,13 @@ function updateObjFilm($titulo, $diretor, $distribuidora) {
 	$stmt->execute();
 
 	closeConnection($dbh);
-	echo json_encode(returnMsg("status", 1));
+	echo json_encode($response);
 	return;
 }
 
 function getObjFilmInfo($titulo) {
+
+	global $filmTable;
 
 	/* lendo dados da mensagem com json
 	$request = Slim::getInstance()->request();
@@ -97,7 +104,7 @@ function getObjFilmInfo($titulo) {
 
 	$title = $titulo;
 	$dbh = getConnection();
-	$sql = "select * from objFilme where titulo = :title";
+	$sql = "select * from $filmTable where titulo = :title";
 	$stmt = $dbh->prepare($sql);
 	$stmt->bindParam(":title", $title);
 	$stmt->execute();
@@ -118,6 +125,8 @@ function getObjFilmInfo($titulo) {
 
 function removeObjFilm($titulo) {
 
+	global $filmTable;
+
 	/* lendo dados da mensagem com json
 	$request = Slim::getInstance()->request();
 	$body = $request->getBody();
@@ -132,15 +141,16 @@ function removeObjFilm($titulo) {
 	*/
 
 	$title = $titulo;
+	$response["status"] = 1;
 	$dbh = getConnection();
-	$sql = "delete from objFilme where titulo = :title";
+	$sql = "delete from $filmTable where titulo = :title";
 
 	$stmt = $dbh->prepare($sql);
 	$stmt->bindParam(":title", $title);
 	$stmt->execute();
 
 	closeConnection($dbh);
-	echo json_encode(returnMsg("status", 1));
+	echo json_encode($response);
 	return;
 }
 
