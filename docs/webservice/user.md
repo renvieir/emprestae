@@ -1,6 +1,6 @@
 **Create User**
 POST $base_url/user/
-Required Fields: name, email, password
+Required Fields: name, email, password, address
 
 **Retrieve User**
 GET $base_url/user/:id
