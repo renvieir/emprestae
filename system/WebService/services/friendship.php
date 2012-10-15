@@ -102,19 +102,25 @@ function getFriends($i1) {
 	$dbh = getConnection();
 	$id1 = $i1;
 
-	$sql = "SELECT idusuario_b AS friend FROM $friendTable WHERE
-				idusuario_a = :id1 UNION SELECT idusuario_a AS friend
-					FROM $friendTable WHERE idusuario_b = :id1";
+	$sql = "SELECT nome, email from usuario, (SELECT idusuario_b AS friend FROM
+				$friendTable WHERE idusuario_a = :id1 UNION SELECT
+					idusuario_a AS friend FROM $friendTable WHERE
+						idusuario_b = :id1) as tmp WHERE
+							idusuario = tmp.friend";
 
 	$stmt = $dbh->prepare($sql);
 	$stmt->bindParam(":id1", $id1);
 	$stmt->execute();
 
 	$arr = Array(); $i = 0;
-	while ($friendId = $stmt->fetch(PDO::FETCH_ASSOC))
-		$arr[$i++] = $friendId["friend"];
+	$arr2 = Array();
+	while ($friendId = $stmt->fetch(PDO::FETCH_ASSOC)) {
+		$arr2[$i] = $friendId["nome"];
+		$arr[$i++] = $friendId["email"];
+	}
 
-	$response["friends"] = (empty($arr)) ? null : $arr;
+	$response["friendsName"] = (empty($arr2)) ? null : $arr2;
+	$response["friendsEmail"] = (empty($arr)) ? null : $arr;
 	closeConnection($dbh);
 	echo json_encode($response);
 }
