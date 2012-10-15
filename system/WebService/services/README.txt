@@ -18,6 +18,13 @@ function getUserInfo(email);
 -- remove-se o usuário
 function removeUser(email);
 
+-- retorna 1 se o usuario está cadastrado, senao 0
+function checkUser(email, pwd);
+
+-- retorna todos os usuarios menos o que estah atualmente logado.
+-- O retorno eh composto por 3 elementos: usersEmail - uma lista, usersName -
+uma lista e status - se houve retorno ou nao.
+function getAllUsers(email)
 
 /******** Funções para Controle de Amizade ******/
 
