@@ -17,6 +17,7 @@ CREATE  TABLE IF NOT EXISTS `emprestae_db`.`objLivro` (
   `autor` VARCHAR(45) NULL ,
   `edicao` INT NULL ,
   `editora` VARCHAR(255) NULL ,
+  `imagePath` VARCHAR(255) NOT NULL ,
   PRIMARY KEY (`idLivro`) )
 ENGINE = InnoDB;
 
@@ -31,8 +32,9 @@ CREATE  TABLE IF NOT EXISTS `emprestae_db`.`usuario` (
   `email` VARCHAR(255) NOT NULL ,
   `nome` VARCHAR(255) NULL ,
   `senha` VARCHAR(255) NOT NULL ,
-  `addressLat` INT NULL ,
-  `addressLong` INT NULL ,
+  `addressLat` DOUBLE NULL ,
+  `addressLong` DOUBLE NULL ,
+  `imagePath` VARCHAR(255) NOT NULL ,
   PRIMARY KEY (`idusuario`) ,
   UNIQUE INDEX `email_UNIQUE` (`email` ASC) )
 ENGINE = InnoDB;
@@ -73,6 +75,7 @@ CREATE  TABLE IF NOT EXISTS `emprestae_db`.`objJogo` (
   `titulo` VARCHAR(45) NOT NULL ,
   `plataforma` VARCHAR(45) NULL ,
   `produtora` VARCHAR(45) NULL ,
+  `imagePath` VARCHAR(255) NOT NULL ,
   PRIMARY KEY (`idJogo`) )
 ENGINE = InnoDB;
 
@@ -87,6 +90,7 @@ CREATE  TABLE IF NOT EXISTS `emprestae_db`.`objFilme` (
   `titulo` VARCHAR(45) NOT NULL ,
   `distribuidora` VARCHAR(45) NULL ,
   `diretor` VARCHAR(45) NULL ,
+  `imagePath` VARCHAR(255) NOT NULL ,
   PRIMARY KEY (`idFilme`) )
 ENGINE = InnoDB;
 
@@ -200,9 +204,9 @@ SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `emprestae_db`;
-INSERT INTO `emprestae_db`.`objLivro` (`idLivro`, `titulo`, `autor`, `edicao`, `editora`) VALUES (1, 'l1', 'a1', 1, 'edi1');
-INSERT INTO `emprestae_db`.`objLivro` (`idLivro`, `titulo`, `autor`, `edicao`, `editora`) VALUES (2, 'l2', 'a2', 2, 'edi2');
-INSERT INTO `emprestae_db`.`objLivro` (`idLivro`, `titulo`, `autor`, `edicao`, `editora`) VALUES (3, 'l3', 'a3', 3, 'edi3');
+INSERT INTO `emprestae_db`.`objLivro` (`idLivro`, `titulo`, `autor`, `edicao`, `editora`, `imagePath`) VALUES (1, 'l1', 'a1', 1, 'edi1', 'http://localhost/sd/emprestei/system/WebService/services/images/objects/defaultObjectImage.jpg');
+INSERT INTO `emprestae_db`.`objLivro` (`idLivro`, `titulo`, `autor`, `edicao`, `editora`, `imagePath`) VALUES (2, 'l2', 'a2', 2, 'edi2', 'http://localhost/sd/emprestei/system/WebService/services/images/objects/defaultObjectImage.jpg');
+INSERT INTO `emprestae_db`.`objLivro` (`idLivro`, `titulo`, `autor`, `edicao`, `editora`, `imagePath`) VALUES (3, 'l3', 'a3', 3, 'edi3', 'http://localhost/sd/emprestei/system/WebService/services/images/objects/defaultObjectImage.jpg');
 
 COMMIT;
 
@@ -211,11 +215,11 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `emprestae_db`;
-INSERT INTO `emprestae_db`.`usuario` (`idusuario`, `email`, `nome`, `senha`, `addressLat`, `addressLong`) VALUES (1, 'm1', 'n1', 'p1', NULL, NULL);
-INSERT INTO `emprestae_db`.`usuario` (`idusuario`, `email`, `nome`, `senha`, `addressLat`, `addressLong`) VALUES (2, 'm2', 'n2', 'p2', NULL, NULL);
-INSERT INTO `emprestae_db`.`usuario` (`idusuario`, `email`, `nome`, `senha`, `addressLat`, `addressLong`) VALUES (3, 'm3', 'n3', 'p3', NULL, NULL);
-INSERT INTO `emprestae_db`.`usuario` (`idusuario`, `email`, `nome`, `senha`, `addressLat`, `addressLong`) VALUES (4, 'm4', 'n4', 'p4', NULL, NULL);
-INSERT INTO `emprestae_db`.`usuario` (`idusuario`, `email`, `nome`, `senha`, `addressLat`, `addressLong`) VALUES (5, 'm5', 'n5', 'p5', NULL, NULL);
+INSERT INTO `emprestae_db`.`usuario` (`idusuario`, `email`, `nome`, `senha`, `addressLat`, `addressLong`, `imagePath`) VALUES (1, 'm1', 'n1', 'p1', NULL, NULL, 'http://localhost/sd/emprestei/system/WebService/services/images/users/defaultUserImage.png');
+INSERT INTO `emprestae_db`.`usuario` (`idusuario`, `email`, `nome`, `senha`, `addressLat`, `addressLong`, `imagePath`) VALUES (2, 'm2', 'n2', 'p2', NULL, NULL, 'http://localhost/sd/emprestei/system/WebService/services/images/users/defaultUserImage.png');
+INSERT INTO `emprestae_db`.`usuario` (`idusuario`, `email`, `nome`, `senha`, `addressLat`, `addressLong`, `imagePath`) VALUES (3, 'm3', 'n3', 'p3', NULL, NULL, 'http://localhost/sd/emprestei/system/WebService/services/images/users/defaultUserImage.png');
+INSERT INTO `emprestae_db`.`usuario` (`idusuario`, `email`, `nome`, `senha`, `addressLat`, `addressLong`, `imagePath`) VALUES (4, 'm4', 'n4', 'p4', NULL, NULL, 'http://localhost/sd/emprestei/system/WebService/services/images/users/defaultUserImage.png');
+INSERT INTO `emprestae_db`.`usuario` (`idusuario`, `email`, `nome`, `senha`, `addressLat`, `addressLong`, `imagePath`) VALUES (5, 'm5', 'n5', 'p5', NULL, NULL, 'http://localhost/sd/emprestei/system/WebService/services/images/users/defaultUserImage.png');
 
 COMMIT;
 
@@ -235,9 +239,9 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `emprestae_db`;
-INSERT INTO `emprestae_db`.`objJogo` (`idJogo`, `titulo`, `plataforma`, `produtora`) VALUES (1, 'j1', 'p1', 'pr1');
-INSERT INTO `emprestae_db`.`objJogo` (`idJogo`, `titulo`, `plataforma`, `produtora`) VALUES (2, 'j2', 'p2', 'pr2');
-INSERT INTO `emprestae_db`.`objJogo` (`idJogo`, `titulo`, `plataforma`, `produtora`) VALUES (3, 'j3', 'p3', 'pr3');
+INSERT INTO `emprestae_db`.`objJogo` (`idJogo`, `titulo`, `plataforma`, `produtora`, `imagePath`) VALUES (1, 'j1', 'p1', 'pr1', 'http://localhost/sd/emprestei/system/WebService/services/images/objects/defaultObjectImage.jpg');
+INSERT INTO `emprestae_db`.`objJogo` (`idJogo`, `titulo`, `plataforma`, `produtora`, `imagePath`) VALUES (2, 'j2', 'p2', 'pr2', 'http://localhost/sd/emprestei/system/WebService/services/images/objects/defaultObjectImage.jpg');
+INSERT INTO `emprestae_db`.`objJogo` (`idJogo`, `titulo`, `plataforma`, `produtora`, `imagePath`) VALUES (3, 'j3', 'p3', 'pr3', 'http://localhost/sd/emprestei/system/WebService/services/images/objects/defaultObjectImage.jpg');
 
 COMMIT;
 
@@ -246,9 +250,9 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `emprestae_db`;
-INSERT INTO `emprestae_db`.`objFilme` (`idFilme`, `titulo`, `distribuidora`, `diretor`) VALUES (1, 'f1', 'dis1', 'd1');
-INSERT INTO `emprestae_db`.`objFilme` (`idFilme`, `titulo`, `distribuidora`, `diretor`) VALUES (2, 'f2', 'dis2', 'd2');
-INSERT INTO `emprestae_db`.`objFilme` (`idFilme`, `titulo`, `distribuidora`, `diretor`) VALUES (3, 'f3', 'dis3', 'd3');
+INSERT INTO `emprestae_db`.`objFilme` (`idFilme`, `titulo`, `distribuidora`, `diretor`, `imagePath`) VALUES (1, 'f1', 'dis1', 'd1', 'http://localhost/sd/emprestei/system/WebService/services/images/objects/defaultObjectImage.jpg');
+INSERT INTO `emprestae_db`.`objFilme` (`idFilme`, `titulo`, `distribuidora`, `diretor`, `imagePath`) VALUES (2, 'f2', 'dis2', 'd2', 'http://localhost/sd/emprestei/system/WebService/services/images/objects/defaultObjectImage.jpg');
+INSERT INTO `emprestae_db`.`objFilme` (`idFilme`, `titulo`, `distribuidora`, `diretor`, `imagePath`) VALUES (3, 'f3', 'dis3', 'd3', 'http://localhost/sd/emprestei/system/WebService/services/images/objects/defaultObjectImage.jpg');
 
 COMMIT;
 
@@ -257,9 +261,9 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `emprestae_db`;
-INSERT INTO `emprestae_db`.`emprestimo` (`idemprestimo`, `fk_idUser1`, `fk_idUser2`, `tipoObjeto`, `idObj`, `dtEmprestimo`, `dtDevolucao`, `status`) VALUES (1, 1, 2, 'B', 2, '2012-12-10', '2012-12-12', 0);
-INSERT INTO `emprestae_db`.`emprestimo` (`idemprestimo`, `fk_idUser1`, `fk_idUser2`, `tipoObjeto`, `idObj`, `dtEmprestimo`, `dtDevolucao`, `status`) VALUES (2, 2, 3, 'C', 1, '2011-9-12', '2011-10-3', 0);
-INSERT INTO `emprestae_db`.`emprestimo` (`idemprestimo`, `fk_idUser1`, `fk_idUser2`, `tipoObjeto`, `idObj`, `dtEmprestimo`, `dtDevolucao`, `status`) VALUES (3, 3, 1, 'A', 3, '2012-1-2', '2012-3-4', 0);
+INSERT INTO `emprestae_db`.`emprestimo` (`idemprestimo`, `fk_idUser1`, `fk_idUser2`, `tipoObjeto`, `idObj`, `dtEmprestimo`, `dtDevolucao`, `status`) VALUES (1, 1, 2, 'b', 2, '2012-12-10', '2012-12-12', 0);
+INSERT INTO `emprestae_db`.`emprestimo` (`idemprestimo`, `fk_idUser1`, `fk_idUser2`, `tipoObjeto`, `idObj`, `dtEmprestimo`, `dtDevolucao`, `status`) VALUES (2, 2, 3, 'c', 1, '2011-9-12', '2011-10-3', 0);
+INSERT INTO `emprestae_db`.`emprestimo` (`idemprestimo`, `fk_idUser1`, `fk_idUser2`, `tipoObjeto`, `idObj`, `dtEmprestimo`, `dtDevolucao`, `status`) VALUES (3, 3, 1, 'a', 3, '2012-1-2', '2012-3-4', 0);
 
 COMMIT;
 

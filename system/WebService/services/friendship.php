@@ -1,30 +1,27 @@
 <?php
 
-$app->get("/makeFriends/:id1/:id2", "createFriendship");
-$app->get("/removeFriends/:id1/:id2", "deleteFriendship");
+$app->post("/makeFriends", "createFriendship");
+$app->delete("/removeFriends", "deleteFriendship");
 $app->get("/getFriends/:id1", "getFriends");
 
-function createFriendship($i1, $i2) {
+function createFriendship() {
 	
 	global $friendTable, $userTable;
 
-	/* lendo dados da mensagem com json
+	/* verifica se existe alguma informacao no corpo da mensagem */
 	$request = Slim::getInstance()->request();
-	$body = $request->getBody();
-	if (!$body) { // fail!
-		$response["status"] = $status;
+	$json = readRequestBody($request);
+	if (!$json) {
+		$response["status"] = 0;
 		echo json_encode($response);
 		return;
 	}
 
-	$json = json_decode($request->getBody());
-	$id1 = $json->friend1;
-	$id2 = $json->friend2;
-	*/
+	/* lendo dados do json */
+	$id1 = $json->id1; $id2 = $json->id2;
 
 	$response["status"] = 1;
 	$dbh = getConnection();
-	$id1 = $i1; $id2 = $i2;
 
 	try {
 		/* if the ids exist and are not friends, add a new friendship */
@@ -47,30 +44,28 @@ function createFriendship($i1, $i2) {
 	echo json_encode($response);
 }
 
-function deleteFriendship($i1, $i2) {
+function deleteFriendship() {
 	
-	global $friendTable;
+	global $friendTable, $userTable;
 	
-	/* lendo dados da mensagem com json
+	/* verifica se existe alguma informacao no corpo da mensagem */
 	$request = Slim::getInstance()->request();
-	$body = $request->getBody();
-	if (!$body) { // fail!
-		$response["status"] = $status;
+	$json = readRequestBody($request);
+	if (!$json) {
+		$response["status"] = 0;
 		echo json_encode($response);
 		return;
 	}
 
-	$json = json_decode($request->getBody());
-	$id1 = $json->friend1;
-	$id2 = $json->friend2;
-	*/
+	/* lendo dados do json */
+	$email1 = $json->email1; $email2 = $json->email2;
 
 	$response["status"] = 1;
 	$dbh = getConnection();
-	$id1 = $i1; $id2 = $i2;
 
-	$sql = "DELETE FROM $friendTable where idusuario_a = :id1 and
-														idusuario_b = :id2";
+	$sql = "DELETE FROM $friendTable where (idusuario_a = :id1 and
+				idusuario_b = :id2) or (idusuario_a = :id2 and
+														idusuario_b = :id1)";
 	$stmt = $dbh->prepare($sql);
 	$stmt->bindParam(":id1", $id1);
 	$stmt->bindParam(":id2", $id2);
@@ -81,46 +76,29 @@ function deleteFriendship($i1, $i2) {
 	echo json_encode($response);
 }
 
-function getFriends($i1) {
+function getFriends($id1) {
 
 	global $friendTable;
 	
-	/* lendo dados da mensagem com json
-	$request = Slim::getInstance()->request();
-	$body = $request->getBody();
-	if (!$body) { // fail!
-		$response["status"] = $status;
-		echo json_encode($response);
-		return;
-	}
-
-	$json = json_decode($request->getBody());
-	$id1 = $json->friend1;
-	*/
-
-	$response["status"] = 1;
+	$response["status"] = 0;
 	$dbh = getConnection();
-	$id1 = $i1;
 
-	$sql = "SELECT nome, email from usuario, (SELECT idusuario_b AS friend FROM
-				$friendTable WHERE idusuario_a = :id1 UNION SELECT
-					idusuario_a AS friend FROM $friendTable WHERE
-						idusuario_b = :id1) as tmp WHERE
+	$sql = "SELECT idusuario, nome, email, addressLat, addressLong, imagePath
+				from usuario, (SELECT idusuario_b AS friend FROM $friendTable
+					WHERE idusuario_a = :id1 UNION SELECT idusuario_a AS friend
+						FROM $friendTable WHERE idusuario_b = :id1) as tmp WHERE
 							idusuario = tmp.friend";
 
 	$stmt = $dbh->prepare($sql);
 	$stmt->bindParam(":id1", $id1);
 	$stmt->execute();
 
-	$arr = Array(); $i = 0;
-	$arr2 = Array();
-	while ($friendId = $stmt->fetch(PDO::FETCH_ASSOC)) {
-		$arr2[$i] = $friendId["nome"];
-		$arr[$i++] = $friendId["email"];
-	}
+	/* get user information as a associative array */
+	$tmp = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	$response["users"] = storeElements("user", $tmp);
+	if ($response["users"])
+		$response["status"] = 1;
 
-	$response["friendsName"] = (empty($arr2)) ? null : $arr2;
-	$response["friendsEmail"] = (empty($arr)) ? null : $arr;
 	closeConnection($dbh);
 	echo json_encode($response);
 }

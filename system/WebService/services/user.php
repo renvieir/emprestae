@@ -2,43 +2,44 @@
 
 //require "bd_connection.php";
 
-$app->get("/createUser/:name/:email/:pwd", "createUser");
-$app->get("/updateUser/:name/:email/:pwd", "updateUser");
+$app->post("/createUser", "createUser");
+$app->put("/updateUser", "updateUser");
+$app->delete("/removeUser", "removeUser");
+$app->post("/checkUser", "checkUser");
 $app->get("/getUserInfo/:email", "getUserInfo");
-$app->get("/removeUser/:email", "removeUser");
-$app->get("/checkUser/:email/:pwd", "checkUser");
 $app->get("/getAllUsers/:email", "getAllUsers");
 
-function createUser($nome, $mail, $pass) {
+function createUser() {
 
 	global $userTable;
 
-	/* lendo dados da mensagem com json
+	/* verifica se existe alguma informacao no corpo da mensagem */
 	$request = Slim::getInstance()->request();
-	$body = $request->getBody();
-	if (!$body) { // fail!
-		$response["status"] = $status;
+	$json = readRequestBody($request);
+	if (!$json) {
+		$response["status"] = 0;
 		echo json_encode($response);
 		return;
 	}
 
-	$json = json_decode($request->getBody());
-	$name = $json->name;
-	$email = $json->email;
-	$pwd = $json->pwd;
-	*/
+	/* lendo dados do json */
+	$name = $json->nome; $email = $json->email; $pwd = $json->senha;
+	$lat = $json->addressLat; $long = $json->addressLong;
+	$imPath = createImage($email, $json->image, true);
 
-	$name = $nome; $email = $mail; $pwd = $pass;
 	$response["status"] = 1;
 	$dbh = getConnection();
-	$sql = "insert into $userTable (email, nome, senha) values
-														(:email, :name, :pwd)";
+	$sql = "insert into $userTable (email, nome, senha, addressLat, addressLong,
+				imagePath) values (:email, :name, :pwd, :lat, :long, :imPath)";
 
 	try {
 		$stmt = $dbh->prepare($sql);
 		$stmt->bindParam(":email", $email);
 		$stmt->bindParam(":name", $name);
 		$stmt->bindParam(":pwd", $pwd);
+		$stmt->bindParam(":lat", $lat);
+		$stmt->bindParam(":long", $long);
+		$stmt->bindParam(":imPath", $imPath);
 		$stmt->execute();
 	} catch (PDOException $e) {
 		$response["status"] = 0;
@@ -49,35 +50,37 @@ function createUser($nome, $mail, $pass) {
 	return;
 }
 
-function updateUser($nome, $mail, $pass) {
+function updateUser() {
 
 	global $userTable;
 
-	/* lendo dados da mensagem com json
+	/* verifica se existe alguma informacao no corpo da mensagem */
 	$request = Slim::getInstance()->request();
-	$body = $request->getBody();
-	if (!$body) { // fail!
-		$response["status"] = $status;
+	$json = readRequestBody($request);
+	if (!$json) {
+		$response["status"] = 0;
 		echo json_encode($response);
 		return;
 	}
 
-	$json = json_decode($request->getBody());
-	$name = $json->name;
-	$email = $json->email;
-	$pwd = $json->pwd;
-	*/
+	/* lendo dados do json */
+	$name = $json->nome; $email = $json->email; $pwd = $json->senha;
+	$lat = $json->addressLat; $long = $json->addressLong;
+	$imPath = createImage($email, $json->image, true);
 
-	$name = $nome; $email = $mail; $pwd = $pass;
 	$response["status"] = 1;
 	$dbh = getConnection();
-	$sql = "update $userTable set email = :email, nome = :name, senha = :pwd
-														where email = :email";
+	$sql = "update $userTable set email = :email, nome = :name, senha = :pwd,
+				addressLat = :lat, addressLong = :long, imagePath = :imPath
+					where email = :email";
 
 	$stmt = $dbh->prepare($sql);
 	$stmt->bindParam(":email", $email);
 	$stmt->bindParam(":name", $name);
 	$stmt->bindParam(":pwd", $pwd);
+	$stmt->bindParam(":lat", $lat);
+	$stmt->bindParam(":long", $long);
+	$stmt->bindParam(":imPath", $imPath);
 	$stmt->execute();
 
 	closeConnection($dbh);
@@ -85,64 +88,22 @@ function updateUser($nome, $mail, $pass) {
 	return;
 }
 
-function getUserInfo($mail) {
+function removeUser() {
 
 	global $userTable;
 
-	/* lendo dados da mensagem com json
+	/* verifica se existe alguma informacao no corpo da mensagem */
 	$request = Slim::getInstance()->request();
-	$body = $request->getBody();
-	if (!$body) { // fail!
-		$response["status"] = $status;
+	$json = readRequestBody($request);
+	if (!$json) {
+		$response["status"] = 0;
 		echo json_encode($response);
 		return;
 	}
 
-	$json = json_decode($request->getBody());
+	/* lendo dados do json */
 	$email = $json->email;
-	*/
 
-	$response["status"] = 0;
-
-	$email = $mail;
-	$dbh = getConnection();
-	$sql = "select * from $userTable where email = :email";
-	$stmt = $dbh->prepare($sql);
-	$stmt->bindParam(":email", $email);
-	$stmt->execute();
-
-	/* get user information as a associative array */
-	$tmp = $stmt->fetchAll(PDO::FETCH_CLASS);
-
-	if (!empty($tmp)) {
-		foreach ($tmp[0] as $key => $value)
-			$response[$key] = ($value) ? $value: null;
-		$response["status"] = 1;
-	}
-
-	closeConnection($dbh);
-	echo json_encode($response);
-	return;
-}
-
-function removeUser($mail) {
-
-	global $userTable;
-
-	/* lendo dados da mensagem com json
-	$request = Slim::getInstance()->request();
-	$body = $request->getBody();
-	if (!$body) { // fail!
-		$response["status"] = $status;
-		echo json_encode($response);
-		return;
-	}
-
-	$json = json_decode($request->getBody());
-	$email = $json->email;
-	*/
-
-	$email = $mail;
 	$response["status"] = 1;
 	$dbh = getConnection();
 	$sql = "delete from $userTable where email = :email";
@@ -156,25 +117,22 @@ function removeUser($mail) {
 	return;
 }
 
-function checkUser($mail, $pass) {
+function checkUser() {
 
 	global $userTable;
 
-	/* lendo dados da mensagem com json
+	/* verifica se existe alguma informacao no corpo da mensagem */
 	$request = Slim::getInstance()->request();
-	$body = $request->getBody();
-	if (!$body) { // fail!
-		$response["status"] = $status;
+	$json = readRequestBody($request);
+	if (!$json) {
+		$response["status"] = 0;
 		echo json_encode($response);
 		return;
 	}
 
-	$json = json_decode($request->getBody());
-	$email = $json->email;
-	$pwd = $json->pwd;
-	*/
+	/* lendo dados do json */
+	$email = $json->email; $pwd = $json->senha;
 
-	$email = $mail; $pwd = $pass;
 	$response["status"] = 1;
 	$dbh = getConnection();
 	$sql = "SELECT * from $userTable where email = :email and senha = :pwd";
@@ -194,47 +152,48 @@ function checkUser($mail, $pass) {
 
 }
 
+function getUserInfo($mail) {
+
+	global $userTable;
+
+	$response["status"] = 0;
+	$email = $mail;
+	$dbh = getConnection();
+	$sql = "select idusuario, nome, email, addressLat, addressLong, imagePath
+										from $userTable where email = :email";
+	$stmt = $dbh->prepare($sql);
+	$stmt->bindParam(":email", $email);
+	$stmt->execute();
+
+	/* get user information as a associative array */
+	$tmp = $stmt->fetchAll(PDO::FETCH_CLASS);
+	$response["users"] = storeElements("user", $tmp);
+	if ($response["users"])
+		$response["status"] = 1;
+
+	closeConnection($dbh);
+	echo json_encode($response);
+	return;
+}
+
 function getAllUsers($mail) {
 
 	global $userTable;
 
-	/* lendo dados da mensagem com json
-	$request = Slim::getInstance()->request();
-	$body = $request->getBody();
-	if (!$body) { // fail!
-		$response["status"] = $status;
-		echo json_encode($response);
-		return;
-	}
-
-	$json = json_decode($request->getBody());
-	$email = $json->email;
-	*/
-
 	$response["status"] = 0;
-
 	$email = $mail;
 	$dbh = getConnection();
-	$sql = "select * from $userTable where email != :email";
+	$sql = "select idusuario, nome, email, addressLat, addressLong, imagePath
+										from $userTable where email != :email";
 	$stmt = $dbh->prepare($sql);
 	$stmt->bindParam(":email", $email);
 	$stmt->execute();
 
 	/* get user information as a associative array */
 	$tmp = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-	if (count($tmp) != 0) {
-		$arr = Array();
-		$arr2 = Array();
-		$i = 0;
-		foreach ($tmp as $user) {
-			$arr[$i] = $user["email"];
-			$arr2[$i++] = $user["nome"];
-		}
-		$response["usersEmail"] = $arr;
-		$response["usersName"] = $arr2;
+	$response["users"] = storeElements("user", $tmp);
+	if ($response["users"])
 		$response["status"] = 1;
-	}
 
 	closeConnection($dbh);
 	echo json_encode($response);
