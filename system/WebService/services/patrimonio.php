@@ -1,34 +1,32 @@
 <?php
 
 $app->get("/getUserObjs/:userID", "getUserObjs");
-$app->get("/addUserObj/:userID/:objID/:objType", "addUserObj");
-$app->get("/removeUserObj/:userID/:objID/:objType", "removeUserObj");
+$app->post("/addUserObj", "addUserObj");
+$app->delete("/removeUserObj", "removeUserObj");
 
 /* return object ids in a list */
 function getUserObjs($userID) {
 
-	$patrimonio = Array("A" => ["Livro", "possuiLivro"],
-						"B" => ["Jogo", "possuiJogo"],
-						"C" => ["Filme", "possuiFilme"]);
+	global $patrimonio;
 
 	$response["status"] = 1;
 	$dbh = getConnection();
 
-	foreach ($patrimonio as $p) {
-		$obj = $p[0]; $possui = $p[1];
-		$sql = "select * from $possui where fk_idUser = :userID";
+	foreach ($patrimonio as $data) {
+	
+		$objType = $data[0]; $possui = $data[1];
+		$table = "obj$objType";
+		$sql = "select $table.* from $table left join $possui on
+						fk_idUser = :userID where fk_id$objType = id$objType";
+
 		$stmt = $dbh->prepare($sql);
 		$stmt->bindParam(":userID", $userID);
 		$stmt->execute();
-		$objIDs = Array();
-		$i = 0;
-		/* FETCH_NUM make the array indexed */
-		while ($row = $stmt->fetch(PDO::FETCH_NUM))
-			$objIDs[$i++] = $row[1];
-		if (!empty($objIDs))
-			$response[$obj] = array_values($objIDs);
-		else
-			$response[$obj] = null;
+
+		$tmp = $stmt->fetchAll(PDO::FETCH_CLASS);
+		$response[$objType] = storeElements("object", $tmp);
+		if ($response[$objType])
+			$response["status"] = 1;
 	}
 
 	closeConnection($dbh);
@@ -36,13 +34,22 @@ function getUserObjs($userID) {
 	return;
 }
 
-function removeUserObj($userId, $objId, $objTitulo) {
+function removeUserObj() {
 
-	$patrimonio = Array("A" => ["Livro", "possuiLivro"],
-						"B" => ["Jogo", "possuiJogo"],
-						"C" => ["Filme", "possuiFilme"]);
+	global $patrimonio;
 
-	$objType = strtoupper($objType);
+	/* verifica se existe alguma informacao no corpo da mensagem */
+	$request = Slim::getInstance()->request();
+	$json = readRequestBody($request);
+	if (!$json) {
+		$response["status"] = 0;
+		echo json_encode($response);
+		return;
+	}
+
+	/* lendo dados do json */
+	$userId = $json->userId; $objId = $json->objId; $objType = $json->objType;
+
 	/* the objType doesn't exist */
 	if ( !isset($patrimonio[$objType]) ) {
 		$response["status"] = 0;
@@ -67,13 +74,22 @@ function removeUserObj($userId, $objId, $objTitulo) {
 	return;
 }
 
-function addUserObj($userId, $objId, $objType) {
+function addUserObj() {
 
-	$patrimonio = Array("A" => ["Livro", "possuiLivro"],
-						"B" => ["Jogo", "possuiJogo"],
-						"C" => ["Filme", "possuiFilme"]);
+	global $patrimonio;
 
-	$objType = strtoupper($objType);
+	/* verifica se existe alguma informacao no corpo da mensagem */
+	$request = Slim::getInstance()->request();
+	$json = readRequestBody($request);
+	if (!$json) {
+		$response["status"] = 0;
+		echo json_encode($response);
+		return;
+	}
+
+	/* lendo dados do json */
+	$userId = $json->userId; $objId = $json->objId; $objType = $json->objType;
+
 	/* the objType doesn't exist */
 	if ( !isset($patrimonio[$objType]) ) {
 		$response["status"] = 0;
@@ -88,10 +104,10 @@ function addUserObj($userId, $objId, $objType) {
 
 	try {
 		/* if the ids exist in their tables and are not linked, add a new row */
-		$sql = "insert into $possui select idusuario, idJogo from
+		$sql = "insert into $possui select idusuario, id$obj from
 					usuario, obj$obj where idusuario = :userID and
 						id$obj = :objID and (select count(*) from $possui where
-							fk_idUser = :userID and fk_idJogo = :objID) = 0";
+							fk_idUser = :userID and fk_id$obj = :objID) = 0";
 		$stmt = $dbh->prepare($sql);
 		$stmt->bindParam(":userID", $userId);
 		$stmt->bindParam(":objID", $objId);

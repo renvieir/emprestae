@@ -1,35 +1,34 @@
 <?php
 
-$app->get("/createBook/:titulo/:autor/:edicao/:editora", "createObjBook");
-$app->get("/updateBook/:titulo/:autor/:edicao/:editora", "updateObjBook");
-$app->get("/getBookInfo/:titulo", "getObjBookInfo");
-$app->get("/removeBook/:titulo", "removeObjBook");
+$app->post("/createBook", "createObjBook");
+$app->put("/updateBook", "updateObjBook");
+$app->get("/getBookInfo/:id", "getObjBookInfo");
+$app->get("/getAllBooks/:id", "getAllObjBooks");
+$app->delete("/removeBook", "removeObjBook");
 
-function createObjBook($titulo, $autor, $edicao, $editora) {
+function createObjBook() {
 
-	global $boojTable;
+	global $bookTable;
 
-	/* lendo dados da mensagem com json
+	/* verifica se existe alguma informacao no corpo da mensagem */
 	$request = Slim::getInstance()->request();
-	$body = $request->getBody();
-	if (!$body) { // fail!
-		$response["status"] = $status;
+	$json = readRequestBody($request);
+	if (!$json) {
+		$response["status"] = 0;
 		echo json_encode($response);
 		return;
 	}
 
-	$json = json_decode($request->getBody());
-	$title = $json->title;
-	$author = $json->author;
-	$ed = $json->ed;
-	$house = $json->house;
-	*/
+	/* lendo dados do json */
+	$title = $json->titulo; $author = $json->autor; $ed = $json->edicao;
+	$house = $json->editora;
+	$imPath = createImage($title, $json->image, false);
 
-	$title = $titulo; $author = $autor; $ed = $edicao; $house = $editora;
 	$response["status"] = 1;
 	$dbh = getConnection();
-	$sql = "insert into $bookTable (titulo, autor, edicao, editora) values
-												(:title, :author, :ed, :house)";
+
+	$sql = "insert into $bookTable (titulo, autor, edicao, editora, imagePath)
+								values (:title, :author, :ed, :house, :imPath)";
 
 	try {
 		$stmt = $dbh->prepare($sql);
@@ -37,6 +36,7 @@ function createObjBook($titulo, $autor, $edicao, $editora) {
 		$stmt->bindParam(":author", $author);
 		$stmt->bindParam(":ed", $ed);
 		$stmt->bindParam(":house", $house);
+		$stmt->bindParam(":imPath", $imPath);
 		$stmt->execute();
 	} catch (PDOException $e) {
 		$response["status"] = 0;
@@ -47,37 +47,37 @@ function createObjBook($titulo, $autor, $edicao, $editora) {
 	return;
 }
 
-function updateObjBook($titulo, $autor, $edicao, $editora) {
+function updateObjBook() {
 
-	global $boojTable;
+	global $bookTable;
 
-	/* lendo dados da mensagem com json
+	/* verifica se existe alguma informacao no corpo da mensagem */
 	$request = Slim::getInstance()->request();
-	$body = $request->getBody();
-	if (!$body) { // fail!
-		$response["status"] = $status;
+	$json = readRequestBody($request);
+	if (!$json) {
+		$response["status"] = 0;
 		echo json_encode($response);
 		return;
 	}
 
-	$json = json_decode($request->getBody());
-	$title = $json->title;
-	$author = $json->author;
-	$ed = $json->ed;
-	$house = $json->house;
-	*/
+	/* lendo dados do json */
+	$title = $json->titulo; $author = $json->autor; $ed = $json->edicao;
+	$house = $json->editora; $id = $json->idLivro;
+	$imPath = createImage($title, $json->image, false);
 
-	$title = $titulo; $author = $autor; $ed = $edicao; $house = $editora;
 	$response["status"] = 1;
 	$dbh = getConnection();
+
 	$sql = "update $bookTable set titulo = :title, autor = :author, edicao= :ed,
-									editora = :house where titulo = :title";
+				editora = :house, imagePath = :imPath where idLivro = :id";
 
 	$stmt = $dbh->prepare($sql);
 	$stmt->bindParam(":title", $title);
 	$stmt->bindParam(":author", $author);
 	$stmt->bindParam(":ed", $ed);
 	$stmt->bindParam(":house", $house);
+	$stmt->bindParam(":imPath", $imPath);
+	$stmt->bindParam(":id", $id);
 	$stmt->execute();
 
 	closeConnection($dbh);
@@ -85,70 +85,74 @@ function updateObjBook($titulo, $autor, $edicao, $editora) {
 	return;
 }
 
-function getObjBookInfo($titulo) {
+function getObjBookInfo($id) {
 
-	global $boojTable;
-
-	/* lendo dados da mensagem com json
-	$request = Slim::getInstance()->request();
-	$body = $request->getBody();
-	if (!$body) { // fail!
-		$response["status"] = $status;
-		echo json_encode($response);
-		return;
-	}
-
-	$json = json_decode($request->getBody());
-	$title = $json->title;
-	*/
+	global $bookTable;
 
 	$response["status"] = 0;
-
-	$title = $titulo;
 	$dbh = getConnection();
-	$sql = "select * from $bookTable where titulo = :title";
+
+	$sql = "select * from $bookTable where idLivro = :id";
 	$stmt = $dbh->prepare($sql);
-	$stmt->bindParam(":title", $title);
+	$stmt->bindParam(":id", $id);
 	$stmt->execute();
 
 	/* get all book information as a associative array */
-	$tmp = $stmt->fetchAll(PDO::FETCH_CLASS)[0];
-
-	if (!empty($tmp)) {
-		foreach ($tmp[0] as $key => $value)
-			$response[$key] = ($value) ? $value: null;
+	$tmp = $stmt->fetchAll(PDO::FETCH_CLASS);
+	$response["objects"] = storeElements("object", $tmp);
+	if ($response["objects"])
 		$response["status"] = 1;
-	}
 
 	closeConnection($dbh);
 	echo json_encode($response);
 	return;
 }
 
-function removeObjBook($titulo) {
+function getAllObjBooks($id) {
 
-	global $boojTable;
+	global $bookTable;
 
-	/* lendo dados da mensagem com json
+	$response["status"] = 0;
+	$dbh = getConnection();
+
+	$sql = "select * from $bookTable where idLivro != :id";
+	$stmt = $dbh->prepare($sql);
+	$stmt->bindParam(":id", $id);
+	$stmt->execute();
+
+	/* get all book information as a associative array */
+	$tmp = $stmt->fetchAll(PDO::FETCH_CLASS);
+	$response["objects"] = storeElements("object", $tmp);
+	if ($response["objects"])
+		$response["status"] = 1;
+
+	closeConnection($dbh);
+	echo json_encode($response);
+	return;
+}
+
+function removeObjBook() {
+
+	global $bookTable;
+
+	/* verifica se existe alguma informacao no corpo da mensagem */
 	$request = Slim::getInstance()->request();
-	$body = $request->getBody();
-	if (!$body) { // fail!
-		$response["status"] = $status;
+	$json = readRequestBody($request);
+	if (!$json) {
+		$response["status"] = 0;
 		echo json_encode($response);
 		return;
 	}
 
-	$json = json_decode($request->getBody());
-	$title = $json->title;
-	*/
+	/* lendo dados do json */
+	$id = $json->idLivro;
 
-	$title = $titulo;
 	$response["status"] = 1;
 	$dbh = getConnection();
-	$sql = "delete from $bookTable where titulo = :title";
+	$sql = "delete from $bookTable where idLivro = :id";
 
 	$stmt = $dbh->prepare($sql);
-	$stmt->bindParam(":title", $title);
+	$stmt->bindParam(":id", $id);
 	$stmt->execute();
 
 	closeConnection($dbh);
