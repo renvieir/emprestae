@@ -1,3 +1,10 @@
+Todos as funções de método GET necessitam que o parâmetro seja passado pela url,
+os demais métodos recebem um objeto JSON com os campos iguais aos do banco. A
+única exceção é a função addUserObj() do arquivo patrimonio.php que necessita
+os seguintes campos no JSON: userId, objId, objType.
+
+Por enquanto desprezar as definições abaixo!
+
 /** Conexões com o Banco de Dados **/
 
 function getConnection();

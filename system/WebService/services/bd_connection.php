@@ -8,6 +8,9 @@
 	$gameTable = "objJogo";
 	$bookTable = "objLivro";
 	$loanTable = "emprestimo";
+	$patrimonio = Array("a" => ["Livro", "possuiLivro"],
+						"b" => ["Jogo","possuiJogo"],
+						"c" => ["Filme", "possuiFilme"]);
 
 	function getConnection() {
 

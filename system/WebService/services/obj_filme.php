@@ -1,41 +1,40 @@
 <?php
 
-$app->get("/createFilm/:titulo/:diretor/:distribuidora", "createObjFilm");
-$app->get("/updateFilm/:titulo/:diretor/:distribuidora", "updateObjFilme");
-$app->get("/getFilmInfo/:titulo", "getObjFilmInfo");
-$app->get("/removeFilm/:titulo", "removeObjFilm");
+$app->post("/createFilm", "createObjFilm");
+$app->put("/updateFilm", "updateObjFilm");
+$app->get("/getFilmInfo/:id", "getObjFilmInfo");
+$app->get("/getAllFilms/:id", "getAllObjFilms");
+$app->delete("/removeFilm", "removeObjFilm");
 
-function createObjFilm($titulo, $diretor, $distribuidora) {
+function createObjFilm() {
 
 	global $filmTable;
 
-	/* lendo dados da mensagem com json
+	/* verifica se existe alguma informacao no corpo da mensagem */
 	$request = Slim::getInstance()->request();
-	$body = $request->getBody();
-	if (!$body) { // fail!
-		$response["status"] = $status;
+	$json = readRequestBody($request);
+	if (!$json) {
+		$response["status"] = 0;
 		echo json_encode($response);
 		return;
 	}
 
-	$json = json_decode($request->getBody());
-	$title = $json->title;
-	$director = $json->director;
-	$ed = $json->ed;
-	$house = $json->house;
-	*/
+	/* lendo dados do json */
+	$title = $json->titulo; $director = $json->diretor;
+	$house = $json->distribuidora;
+	$imPath = createImage($title, $json->image, false);
 
-	$title = $titulo; $director = $diretor; $house = $distribuidora;
 	$response["status"] = 1;
 	$dbh = getConnection();
-	$sql = "insert into $filmTable (titulo, diretor, distribuidora) values
-												(:title, :director, :house)";
 
+	$sql = "insert into $filmTable (titulo, diretor, distribuidora, imagePath)
+								values (:title, :director, :house, :imPath)";
 	try {
 		$stmt = $dbh->prepare($sql);
 		$stmt->bindParam(":title", $title);
 		$stmt->bindParam(":director", $director);
 		$stmt->bindParam(":house", $house);
+		$stmt->bindParam(":imPath", $imPath);
 		$stmt->execute();
 	} catch (PDOException $e) {
 		$response["status"] = 0;
@@ -46,36 +45,36 @@ function createObjFilm($titulo, $diretor, $distribuidora) {
 	return;
 }
 
-function updateObjFilm($titulo, $diretor, $distribuidora) {
+function updateObjFilm() {
 
 	global $filmTable;
 
-	/* lendo dados da mensagem com json
+	/* verifica se existe alguma informacao no corpo da mensagem */
 	$request = Slim::getInstance()->request();
-	$body = $request->getBody();
-	if (!$body) { // fail!
-		$response["status"] = $status;
+	$json = readRequestBody($request);
+	if (!$json) {
+		$response["status"] = 0;
 		echo json_encode($response);
 		return;
 	}
 
-	$json = json_decode($request->getBody());
-	$title = $json->title;
-	$director = $json->director;
-	$ed = $json->ed;
-	$house = $json->house;
-	*/
+	/* lendo dados do json */
+	$title = $json->titulo; $director = $json->diretor;
+	$house = $json->distribuidora; $id = $json->idFilme;
+	$imPath = createImage($title, $json->image, false);
 
-	$title = $titulo; $director = $diretor; $house = $distribuidora;
 	$response["status"] = 1;
 	$dbh = getConnection();
+
 	$sql = "update $filmTable set titulo = :title, diretor = :director,
-								distribuidora = :house where titulo = :title";
+			distribuidora = :house, imagePath = :imPath where idFilme = :id";
 
 	$stmt = $dbh->prepare($sql);
 	$stmt->bindParam(":title", $title);
 	$stmt->bindParam(":director", $director);
 	$stmt->bindParam(":house", $house);
+	$stmt->bindParam(":imPath", $imPath);
+	$stmt->bindParam(":id", $id);
 	$stmt->execute();
 
 	closeConnection($dbh);
@@ -83,70 +82,74 @@ function updateObjFilm($titulo, $diretor, $distribuidora) {
 	return;
 }
 
-function getObjFilmInfo($titulo) {
+function getAllObjFilms($id) {
 
 	global $filmTable;
 
-	/* lendo dados da mensagem com json
-	$request = Slim::getInstance()->request();
-	$body = $request->getBody();
-	if (!$body) { // fail!
-		$response["status"] = $status;
-		echo json_encode($response);
-		return;
-	}
+	$response["status"] = 0;
+	$dbh = getConnection();
 
-	$json = json_decode($request->getBody());
-	$title = $json->title;
-	*/
+	$sql = "select * from $filmTable where idFilme != :id";
+	$stmt = $dbh->prepare($sql);
+	$stmt->bindParam(":id", $id);
+	$stmt->execute();
+
+	/* get user information as a associative array */
+	$tmp = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	$response["objects"] = storeElements("object", $tmp);
+	if ($response["objects"])
+		$response["status"] = 1;
+
+	closeConnection($dbh);
+	echo json_encode($response);
+	return;
+}
+
+function getObjFilmInfo($id) {
+
+	global $filmTable;
 
 	$response["status"] = 0;
-
-	$title = $titulo;
 	$dbh = getConnection();
-	$sql = "select * from $filmTable where titulo = :title";
+
+	$sql = "select * from $filmTable where idFilme = :id";
 	$stmt = $dbh->prepare($sql);
-	$stmt->bindParam(":title", $title);
+	$stmt->bindParam(":id", $id);
 	$stmt->execute();
 
 	/* get all Film information as a associative array */
 	$tmp = $stmt->fetchAll(PDO::FETCH_CLASS);
-
-	if (!empty($tmp)) {
-		foreach ($tmp[0] as $key => $value)
-			$response[$key] = ($value) ? $value: null;
+	$response["objects"] = storeElements("object", $tmp);
+	if ($response["objects"])
 		$response["status"] = 1;
-	}
 
 	closeConnection($dbh);
 	echo json_encode($response);
 	return;
 }
 
-function removeObjFilm($titulo) {
+function removeObjFilm() {
 
 	global $filmTable;
 
-	/* lendo dados da mensagem com json
+	/* verifica se existe alguma informacao no corpo da mensagem */
 	$request = Slim::getInstance()->request();
-	$body = $request->getBody();
-	if (!$body) { // fail!
-		$response["status"] = $status;
+	$json = readRequestBody($request);
+	if (!$json) {
+		$response["status"] = 0;
 		echo json_encode($response);
 		return;
 	}
 
-	$json = json_decode($request->getBody());
-	$title = $json->title;
-	*/
+	/* lendo dados do json */
+	$id = $json->idFilme;
 
-	$title = $titulo;
 	$response["status"] = 1;
 	$dbh = getConnection();
-	$sql = "delete from $filmTable where titulo = :title";
 
+	$sql = "delete from $filmTable where idFilme = :id";
 	$stmt = $dbh->prepare($sql);
-	$stmt->bindParam(":title", $title);
+	$stmt->bindParam(":id", $id);
 	$stmt->execute();
 
 	closeConnection($dbh);
@@ -155,4 +158,3 @@ function removeObjFilm($titulo) {
 }
 
 ?>
-

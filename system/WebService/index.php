@@ -37,6 +37,8 @@ function raiz() {
 }
 
 require "services/bd_connection.php";
+require "services/treat_request.php";
+require "services/image.php";
 require "services/friendship.php";
 require "services/user.php";
 require "services/obj_livro.php";
