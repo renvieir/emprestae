@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010 Express for Windows Phone
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emprestae", "Emprestae\Emprestae.csproj", "{6A454B22-8663-444B-9654-B174F6B9A61C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "INdT.Services", "..\..\..\..\Desktop\wp7\INdT\Services\INdT.Services.csproj", "{F4C80543-0F72-4E13-AF62-B733813FCE3D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "INdT.Services", "..\INdT\Services\INdT.Services.csproj", "{F4C80543-0F72-4E13-AF62-B733813FCE3D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "INdT.Views", "..\..\..\..\Desktop\wp7\INdT\Views\INdT.Views.csproj", "{DFF67CFA-0BF3-4A03-A4C5-14DC378E4696}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "INdT.Views", "..\INdT\Views\INdT.Views.csproj", "{DFF67CFA-0BF3-4A03-A4C5-14DC378E4696}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

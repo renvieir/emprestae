@@ -13,24 +13,12 @@ using System.Runtime.Serialization;
 namespace Emprestae.Models
 {
     [DataContract]
-    public class Usuario
+    public class UserResponse
     {
-        [DataMember]
-        public int idusuario { get; set; }
-
         [DataMember]
         public int status { get; set; }
 
         [DataMember]
-        public string email { get; set; }
-
-        [DataMember]
-        public string nome { get; set; }
-
-        [DataMember]
-        public string addressLat { get; set; }
-
-        [DataMember]
-        public string addressLong { get; set; }
+        public UserArray[] users { get; set; }
     }
 }

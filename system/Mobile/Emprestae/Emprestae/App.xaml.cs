@@ -24,6 +24,11 @@ namespace Emprestae
         public PhoneApplicationFrame RootFrame { get; private set; }
 
         /// <summary>
+        /// Objeto que faz as chamadas ao webservice
+        /// </summary>
+        public EmprestaeWebService emprestae = new EmprestaeWebService();
+
+        /// <summary>
         /// Constructor for the Application object.
         /// </summary>
         public App()

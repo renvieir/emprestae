@@ -1,0 +1,115 @@
+﻿<UserControl x:Class="INdT.Views.ContactUs"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    FontFamily="{StaticResource PhoneFontFamilyNormal}"
+    FontSize="{StaticResource PhoneFontSizeNormal}"
+    Foreground="{StaticResource PhoneForegroundBrush}"
+    d:DesignHeight="800" d:DesignWidth="480">
+
+    <UserControl.Resources>
+        <Style TargetType="TextBlock" x:Key="ApplicationTitleStyle">
+            <Setter Property="Foreground" Value="#666666" />
+            <Setter Property="FontSize" Value="24" />
+            <Setter Property="FontFamily" Value="Segoe WP Bold" />
+            <Setter Property="Margin" Value="20,50,0,0" />
+        </Style>
+        <Style TargetType="TextBlock" BasedOn="{StaticResource PhoneTextTitle1Style}" x:Key="ContactUsTitleStyle">
+            <Setter Property="Foreground" Value="#ffffff" />
+            <Setter Property="FontFamily" Value="Segoe WP SemiLight" />
+            <Setter Property="FontSize" Value="80" />
+            <Setter Property="Margin" Value="20,0,0,0" />
+        </Style>
+        <Style TargetType="TextBlock" x:Key="DescriptionStyle">
+            <Setter Property="Foreground" Value="#8f8f8f" />
+            <Setter Property="FontSize" Value="24" />
+            <Setter Property="FontFamily" Value="Segoe WP SemiLight" />
+            <Setter Property="TextAlignment" Value="Left" />
+            <Setter Property="Width" Value="400" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+        <Style TargetType="TextBlock" x:Key="FacebookTwitterStyle">
+            <Setter Property="FontSize" Value="40"/>
+        </Style>
+        <Style TargetType="TextBlock" x:Key="FacebookTwitterDescriptionStyle">
+            <Setter Property="FontSize" Value="18"/>
+        </Style>
+        <Style TargetType="StackPanel" x:Key="ImageGuruStyle">
+            <Setter Property="Margin" Value="0,0,0,0"/>
+        </Style>
+        <Style TargetType="StackPanel" x:Key="FacebookTwitterPanel">
+            <Setter Property="Margin" Value="0,0,0,0"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid x:Name="LayoutRoot">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>        
+
+        <!--TitlePanel contains the name of the application and page title-->
+        <StackPanel x:Name="TitlePanel" Grid.Row="1" Margin="12,17,0,28">
+            <TextBlock Text="{Binding ApplicationTitle}" Style="{Binding ApplicationTitleStyle}"/>
+            <TextBlock Text="fale conosco" Margin="0,0,0,0" Style="{Binding ContactUsTitleStyle}"/>
+        </StackPanel>
+
+        <!--ContentPanel - place additional content here-->
+        <Grid x:Name="ContentPanel" Grid.Row="2" Margin="12,0,12,0">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="143"/>
+                <RowDefinition Height="231*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Orientation="Vertical" Height="143" Style="{Binding ImageGuruStyle}">
+                <Image Margin="10" HorizontalAlignment="Left" Source="Images/ContactUs/logo-apps-guru.png" Stretch="None" />
+            </StackPanel>
+
+
+            <!--<StackPanel Grid.Row="0" Orientation="Vertical">
+                <TextBlock Text="versão 1.0 | 10.07.2011" Foreground="#717a64" FontSize="34"/>
+                <TextBlock Text="Este aplicativo rodará apenas na 
+orientação vertical" TextWrapping="Wrap" Foreground="#717a64" FontSize="18"/>
+            </StackPanel>-->
+
+            <TextBlock Style="{Binding DescriptionStyle}" Text="Saiba mais sobre os aplicativos desenvolvidos pelo INdT através do perfil Apps Guru no Twitter e Facebook. 
+Acompanhe nossos canais de comunicação para estar atualizando sobre novidades e lançamentos, enviar sugestões e muito mais. Qualquer dúvida é só falar com a gente!" TextWrapping="Wrap" Grid.Row="1"/>
+
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <StackPanel x:Name="facebookButton" Orientation="Horizontal" ManipulationStarted="socialButton_ManipulationStarted" Style="{Binding FacebookTwitterPanel}">
+                    <Image Margin="10,20" Source="Images/ContactUs/facebook.png" Stretch="None"/>
+                    <StackPanel Margin="10,20" Orientation="Vertical" >
+                        <TextBlock Text="facebook" Style="{Binding FacebookTwitterStyle}"/>
+                        <TextBlock Text="clique aqui para falar conosco" Style="{Binding FacebookTwitterDescriptionStyle}"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <StackPanel x:Name="twitterButton" Grid.Row="1" Orientation="Horizontal" ManipulationStarted="socialButton_ManipulationStarted" Style="{Binding FacebookTwitterPanel}">
+                    <Image Margin="10,20" Source="Images/ContactUs/twitter.png" Stretch="None"/>
+                    <StackPanel Margin="10,20" Orientation="Vertical">
+                        <TextBlock Text="twitter" Style="{Binding FacebookTwitterStyle}"/>
+                        <TextBlock Text="clique aqui para falar conosco" Style="{Binding FacebookTwitterDescriptionStyle}"/>
+                    </StackPanel>
+                </StackPanel>
+
+
+            </Grid>
+
+        </Grid>
+    </Grid>
+</UserControl>
