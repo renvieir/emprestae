@@ -24,8 +24,9 @@ function getUserObjs($userID) {
 		$stmt->execute();
 
 		$tmp = $stmt->fetchAll(PDO::FETCH_CLASS);
-		$response[$objType] = storeElements("object", $tmp);
-		if ($response[$objType])
+		$objType = strtolower($objType);
+		$response[$objType . "s"] = storeElements($objType, $tmp);
+		if ($response[$objType . "s"])
 			$response["status"] = 1;
 	}
 

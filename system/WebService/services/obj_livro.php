@@ -99,8 +99,8 @@ function getObjBookInfo($id) {
 
 	/* get all book information as a associative array */
 	$tmp = $stmt->fetchAll(PDO::FETCH_CLASS);
-	$response["objects"] = storeElements("object", $tmp);
-	if ($response["objects"])
+	$response["livros"] = storeElements("livro", $tmp);
+	if ($response["livros"])
 		$response["status"] = 1;
 
 	closeConnection($dbh);
