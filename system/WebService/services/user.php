@@ -7,7 +7,8 @@ $app->put("/updateUser", "updateUser");
 $app->delete("/removeUser", "removeUser");
 $app->post("/checkUser", "checkUser");
 $app->get("/getUserInfo/:email", "getUserInfo");
-$app->get("/getAllUsers/:email", "getAllUsers");
+$app->get("/getAllUsersBut/:email", "getAllUsersBut");
+$app->get("/getAllUsersByEmail/:email", "getAllUsersByEmail");
 
 function createUser() {
 
@@ -25,12 +26,12 @@ function createUser() {
 	/* lendo dados do json */
 	$name = $json->nome; $email = $json->email; $pwd = $json->senha;
 	$lat = $json->addressLat; $long = $json->addressLong;
-	$imPath = createImage($email, $json->image, true);
+//	$imPath = createImage($email, $json->image, true);
 
 	$response["status"] = 1;
 	$dbh = getConnection();
 	$sql = "insert into $userTable (email, nome, senha, addressLat, addressLong,
-				imagePath) values (:email, :name, :pwd, :lat, :long, :imPath)";
+				imagePath) values (:email, :name, :pwd, :lat, :long, null)";
 
 	try {
 		$stmt = $dbh->prepare($sql);
@@ -39,7 +40,7 @@ function createUser() {
 		$stmt->bindParam(":pwd", $pwd);
 		$stmt->bindParam(":lat", $lat);
 		$stmt->bindParam(":long", $long);
-		$stmt->bindParam(":imPath", $imPath);
+//		$stmt->bindParam(":imPath", $imPath);
 		$stmt->execute();
 	} catch (PDOException $e) {
 		$response["status"] = 0;
@@ -176,7 +177,7 @@ function getUserInfo($mail) {
 	return;
 }
 
-function getAllUsers($mail) {
+function getAllUsersBut($mail) {
 
 	global $userTable;
 
@@ -187,6 +188,29 @@ function getAllUsers($mail) {
 										from $userTable where email != :email";
 	$stmt = $dbh->prepare($sql);
 	$stmt->bindParam(":email", $email);
+	$stmt->execute();
+
+	/* get user information as a associative array */
+	$tmp = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	$response["users"] = storeElements("user", $tmp);
+	if ($response["users"])
+		$response["status"] = 1;
+
+	closeConnection($dbh);
+	echo json_encode($response);
+	return;
+}
+
+function getAllUsersByEmail($mail) {
+
+	global $userTable;
+
+	$response["status"] = 0;
+	$email = $mail;
+	$dbh = getConnection();
+	$sql = "select idusuario, nome, email, addressLat, addressLong, imagePath
+										from $userTable where email like '%$mail%'";
+	$stmt = $dbh->prepare($sql);
 	$stmt->execute();
 
 	/* get user information as a associative array */
