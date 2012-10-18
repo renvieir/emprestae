@@ -34,7 +34,7 @@ CREATE  TABLE IF NOT EXISTS `emprestae_db`.`usuario` (
   `senha` VARCHAR(255) NOT NULL ,
   `addressLat` DOUBLE NULL ,
   `addressLong` DOUBLE NULL ,
-  `imagePath` VARCHAR(255) NOT NULL ,
+  `imagePath` VARCHAR(255) NULL ,
   PRIMARY KEY (`idusuario`) ,
   UNIQUE INDEX `email_UNIQUE` (`email` ASC) )
 ENGINE = InnoDB;
@@ -108,7 +108,7 @@ CREATE  TABLE IF NOT EXISTS `emprestae_db`.`emprestimo` (
   `idObj` INT NOT NULL ,
   `dtEmprestimo` DATETIME NULL ,
   `dtDevolucao` DATETIME NULL ,
-  `status` TINYINT(1) NULL ,
+  `status` TINYINT(1)  NULL ,
   PRIMARY KEY (`idemprestimo`) ,
   INDEX `fk_idUsuario1` (`fk_idUser1` ASC) ,
   INDEX `fk_idUsuario2` (`fk_idUser2` ASC) ,
