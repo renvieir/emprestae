@@ -27,30 +27,32 @@ namespace Emprestae.Pages
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-            if (emprestae.userInfo == null)
-            {
-                emprestae.GetUserInfo(success, error);
-            }
-            else
-            {
-                userPanel.DataContext = emprestae.userInfo;
-            }
+            emprestae.GetUserInfo(success, error);
+            //if (emprestae.userInfo == null)
+            //{
+            //    emprestae.GetUserInfo(success, error);
+            //}
+            //else
+            //{
+            //    userPanel.DataContext = emprestae.userInfo;
+            //}
 
             emprestae.GetAllUsersButMe(success, error);
         }
 
-        void success(UserInfo response)
-        {
-            Dispatcher.BeginInvoke(() => {
-                userPanel.DataContext = response;
-            });
-        }
+        //void success(UserInfo response)
+        //{
+        //    Dispatcher.BeginInvoke(() => {
+        //        userPanel.DataContext = response;
+        //    });
+        //}
 
         void success(UserResponse response)
         {
             Dispatcher.BeginInvoke(() => {
                 if (response.status != 0)
                 {
+                    userPanel.DataContext = response.users[0];
                     //friendListBox.ItemsSource = response.users;
                 }
             });

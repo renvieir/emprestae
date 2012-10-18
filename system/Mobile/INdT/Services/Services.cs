@@ -116,7 +116,8 @@ namespace INdT.Services
 
         protected virtual byte[] buildPostData(Dictionary<string, object> args)
         {
-            return Encoding.UTF8.GetBytes(Util.encodeDictionaryToQuery(args, false));
+            return Encoding.UTF8.GetBytes(Util.encodeJson(args));
+            //return Encoding.UTF8.GetBytes(Util.encodeDictionaryToQuery(args, false));
         }
 
         protected virtual void startRequest(RequestState requestState)
