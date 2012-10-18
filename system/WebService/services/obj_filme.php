@@ -96,8 +96,8 @@ function getAllObjFilms($id) {
 
 	/* get user information as a associative array */
 	$tmp = $stmt->fetchAll(PDO::FETCH_ASSOC);
-	$response["objects"] = storeElements("object", $tmp);
-	if ($response["objects"])
+	$response["filmes"] = storeElements("filme", $tmp);
+	if ($response["filmes"])
 		$response["status"] = 1;
 
 	closeConnection($dbh);
@@ -119,8 +119,8 @@ function getObjFilmInfo($id) {
 
 	/* get all Film information as a associative array */
 	$tmp = $stmt->fetchAll(PDO::FETCH_CLASS);
-	$response["objects"] = storeElements("object", $tmp);
-	if ($response["objects"])
+	$response["filmes"] = storeElements("filme", $tmp);
+	if ($response["filmes"])
 		$response["status"] = 1;
 
 	closeConnection($dbh);
