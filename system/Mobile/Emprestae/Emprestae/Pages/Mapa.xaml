@@ -6,6 +6,7 @@
     xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:my="clr-namespace:Microsoft.Phone.Controls.Maps;assembly=Microsoft.Phone.Controls.Maps"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
@@ -15,23 +16,27 @@
 
     <!--LayoutRoot is the root grid where all page content is placed-->
     <Grid x:Name="LayoutRoot" Background="Transparent">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-
-        <!--TitlePanel contains the name of the application and page title-->
-        <StackPanel x:Name="TitlePanel" Grid.Row="0" Margin="12,17,0,28">
-            <TextBlock x:Name="ApplicationTitle" Text="MY APPLICATION" Style="{StaticResource PhoneTextNormalStyle}"/>
-            <TextBlock x:Name="PageTitle" Text="page name" Margin="9,-7,0,0" Style="{StaticResource PhoneTextTitle1Style}"/>
-        </StackPanel>
-
-        <!--ContentPanel - place additional content here-->
-        <StackPanel x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
+        <StackPanel x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0" Visibility="Collapsed">
             <TextBlock Name="statusTextBlock"/>
             <TextBlock Name="latitudeTextBlock" />
             <TextBlock Name="longitudeTextBlock" />
         </StackPanel>
+        <my:Map                
+            Name="Map"
+            CredentialsProvider="{Binding CredentialsProvider}"
+            CopyrightVisibility="Collapsed"
+            LogoVisibility="Collapsed"
+            ZoomLevel="17"
+            Center ="-3.089, -59.966">
+
+            <my:Pushpin Location="-3.089000, -59.966" Content="IComp"/>
+            <my:Pushpin Location="-3.0896, -59.964" Content="FT"/>
+
+            <!-- Routes -->
+            <my:MapLayer Name="mapLayer"/>
+
+        </my:Map>
+
     </Grid>
  
     <!--Sample code showing usage of ApplicationBar-->

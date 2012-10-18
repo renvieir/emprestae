@@ -219,7 +219,7 @@ namespace Emprestae
         {
             Dictionary<string, object> arg = new Dictionary<string, object>()
             {
-                {"metodo","getAllUsers"},
+                {"metodo","getAllUsersByEmail"},
                 {"email", email},
             };
             get(host, arg, success, error);
@@ -231,10 +231,6 @@ namespace Emprestae
         #region Métodos de Objetos
 
         #region Métodos de Livros
-
-        public void AddBook()
-        {
-        }
 
         #endregion
 
