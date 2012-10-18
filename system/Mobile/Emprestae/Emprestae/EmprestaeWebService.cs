@@ -37,6 +37,31 @@ namespace Emprestae
 
         private void post<T>(string url, Dictionary<string, object> args, Action<T> success, Action error)
         {
+            post(new Uri(url, UriKind.Absolute),
+                args,
+                (sender, requestArgs) => {
+                    if (requestArgs.failed)
+                    {
+                        if (error != null)
+                            error();
+                        else
+                            Debug.WriteLine("EmprestaeServices - An error occurred but no error handling was defined");
+                    }
+                    else
+                    {
+                        string data = Util.decodeResponseToString(requestArgs.result as HttpWebResponse);
+                        T response = default(T);
+                        if (typeof(T) == typeof(string))
+                        {
+                            response = (T)(object)data;
+                        }
+                        else
+                        {
+                            response = Util.deserializeObject<T>(data);
+                        }
+                        success(response);
+                    }
+                });
 
  
         }
@@ -90,7 +115,7 @@ namespace Emprestae
         /// <param name="error">Callback de erro</param>
         /// <author>Renato Vieira</author>
         /// <email>vieirarenato.rpv@gmail.com</email>
-        public void GetUserInfo(Action<UserInfo> success, Action error)
+        public void GetUserInfo(Action<UserResponse> success, Action error)
         {
             Dictionary<string, object> arg = new Dictionary<string, object>()
             {
@@ -98,10 +123,10 @@ namespace Emprestae
                 {"email",this.userInfo.email}
             };
 
-            get<UserInfo>(host, arg, 
+            get<UserResponse>(host, arg, 
                 (result) => 
                 {
-                    userInfo = result.user;
+                    userInfo = result.users[0].user;
                     success(result);
                 } , error);
  
@@ -117,17 +142,23 @@ namespace Emprestae
         /// <email>vieirarenato.rpv@gmail.com</email>
         public void CreateUser(Dictionary<string, object> userData, Action<UserInfo> success, Action error)
         {
+            if (this.userInfo == null)
+            {
+                this.userInfo = new User();
+            }
             this.userInfo.email = userData["email"].ToString();
 
             Dictionary<string, object> arg = new Dictionary<string, object>()
             {
-                {"metodo","createUser"},
                 {"nome",userData["nome"]},
                 {"email",userData["email"]},
-                {"pwd",userData["pwd"]}
+                {"senha",userData["pwd"]},
+                {"addressLat",123},
+                {"addressLong",123},
+                {"image","oioioi"}
             };
 
-            get<UserInfo>(host, arg, success, error);
+            post<UserInfo>(host+"/createUser", arg, success, error);
         }
 
         /// <summary>
@@ -149,15 +180,15 @@ namespace Emprestae
 
             Dictionary<string, object> arg = new Dictionary<string, object>()
             {
-                {"metodo","checkUser"},
                 {"email",userData["email"]},
-                {"pwd",userData["pwd"]}
+                {"senha",userData["pwd"]}
             };
 
-            get<UserInfo>(host, arg,
+            post<UserInfo>(host + "/checkUser", arg,
                 (result) =>
                 {
-                    userInfo = result.user;
+                    if (result.user != null)
+                        userInfo = result.user;
                     success(result);
                 }, error);
         }
@@ -188,7 +219,7 @@ namespace Emprestae
         {
             Dictionary<string, object> arg = new Dictionary<string, object>()
             {
-                {"metodo","getAllUsers"},
+                {"metodo","getAllUsersByEmail"},
                 {"email", email},
             };
             get(host, arg, success, error);
@@ -200,10 +231,6 @@ namespace Emprestae
         #region Métodos de Objetos
 
         #region Métodos de Livros
-
-        public void AddBook()
-        {
-        }
 
         #endregion
 

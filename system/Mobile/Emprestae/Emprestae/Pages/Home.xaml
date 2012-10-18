@@ -8,7 +8,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
-    mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="800"
+    mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="728"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
@@ -22,8 +22,8 @@
             <!--Panorama item one-->
             <controls:PanoramaItem Header="perfil">
                 <StackPanel Name="userPanel">
-                    <TextBlock Text="{Binding nome}"/>
-                    <TextBlock Text="{Binding email}"/>
+                    <TextBlock Text="{Binding user.nome}"/>
+                    <TextBlock Text="{Binding user.email}"/>
                 </StackPanel>
             </controls:PanoramaItem>
 
