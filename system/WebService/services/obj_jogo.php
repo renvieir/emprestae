@@ -96,8 +96,8 @@ function getObjGameInfo($id) {
 
 	/* get all Game information as a associative array */
 	$tmp = $stmt->fetchAll(PDO::FETCH_CLASS);
-	$response["objects"] = storeElements("object", $tmp);
-	if ($response["objects"])
+	$response["jogos"] = storeElements("jogo", $tmp);
+	if ($response["jogos"])
 		$response["status"] = 1;
 
 	closeConnection($dbh);
@@ -119,8 +119,8 @@ function getAllObjGames($id) {
 
 	/* get user information as a associative array */
 	$tmp = $stmt->fetchAll(PDO::FETCH_ASSOC);
-	$response["objects"] = storeElements("object", $tmp);
-	if ($response["objects"])
+	$response["jogos"] = storeElements("jogo", $tmp);
+	if ($response["jogos"])
 		$response["status"] = 1;
 
 	closeConnection($dbh);
