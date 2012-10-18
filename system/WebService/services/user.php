@@ -18,6 +18,7 @@ function createUser() {
 	$json = readRequestBody($request);
 	if (!$json) {
 		$response["status"] = 0;
+		$response["aqui"] = 1;
 		echo json_encode($response);
 		return;
 	}
@@ -25,7 +26,7 @@ function createUser() {
 	/* lendo dados do json */
 	$name = $json->nome; $email = $json->email; $pwd = $json->senha;
 	$lat = $json->addressLat; $long = $json->addressLong;
-	$imPath = createImage($email, $json->image, true);
+	$imPath = createImage($email, $json->imagePath, true);
 
 	$response["status"] = 1;
 	$dbh = getConnection();
@@ -40,9 +41,11 @@ function createUser() {
 		$stmt->bindParam(":lat", $lat);
 		$stmt->bindParam(":long", $long);
 		$stmt->bindParam(":imPath", $imPath);
+
 		$stmt->execute();
 	} catch (PDOException $e) {
 		$response["status"] = 0;
+		$response["aqui"] = 0;
 	}
 
 	closeConnection($dbh);
@@ -66,7 +69,7 @@ function updateUser() {
 	/* lendo dados do json */
 	$name = $json->nome; $email = $json->email; $pwd = $json->senha;
 	$lat = $json->addressLat; $long = $json->addressLong;
-	$imPath = createImage($email, $json->image, true);
+	$imPath = createImage($email, $json->imagePath, true);
 
 	$response["status"] = 1;
 	$dbh = getConnection();
