@@ -3,7 +3,7 @@
 $app->post("/createFilm", "createObjFilm");
 $app->put("/updateFilm", "updateObjFilm");
 $app->get("/getFilmInfo/:id", "getObjFilmInfo");
-$app->get("/getAllFilms/:id", "getAllObjFilms");
+$app->get("/getAllFilms", "getAllObjFilms");
 $app->delete("/removeFilm", "removeObjFilm");
 
 function createObjFilm() {
@@ -82,16 +82,15 @@ function updateObjFilm() {
 	return;
 }
 
-function getAllObjFilms($id) {
+function getAllObjFilms() {
 
 	global $filmTable;
 
 	$response["status"] = 0;
 	$dbh = getConnection();
 
-	$sql = "select * from $filmTable where idFilme != :id";
+	$sql = "select * from $filmTable";
 	$stmt = $dbh->prepare($sql);
-	$stmt->bindParam(":id", $id);
 	$stmt->execute();
 
 	/* get user information as a associative array */

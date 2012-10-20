@@ -58,7 +58,7 @@ function deleteFriendship() {
 	}
 
 	/* lendo dados do json */
-	$email1 = $json->email1; $email2 = $json->email2;
+	$id1 = $json->id1; $id2 = $json->id2;
 
 	$response["status"] = 1;
 	$dbh = getConnection();
