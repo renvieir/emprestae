@@ -74,6 +74,13 @@
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Models\Filme.cs" />
+    <Compile Include="Models\FilmeArray.cs" />
+    <Compile Include="Models\Jogo.cs" />
+    <Compile Include="Models\JogoArray.cs" />
+    <Compile Include="Models\Livro.cs" />
+    <Compile Include="Models\LivroArray.cs" />
+    <Compile Include="Models\ObjResponse.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\UserArray.cs" />
     <Compile Include="Models\UserInfo.cs" />

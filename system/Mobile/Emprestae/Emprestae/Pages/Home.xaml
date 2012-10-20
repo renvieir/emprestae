@@ -25,7 +25,7 @@
                     <TextBlock Text="{Binding user.nome}"/>
                     <TextBlock Text="{Binding user.email}"/>
                 </StackPanel>
-            </controls:PanoramaItem>
+            </controls:PanoramaItem>  
 
             <!--Panorama item two-->
             <controls:PanoramaItem Header="objetos">
@@ -40,8 +40,8 @@
                             <DataTemplate>
                                 <Border Background="{StaticResource PhoneAccentBrush}" Width="130" Height="130" Margin="5" >
                                     <StackPanel>
-                                        <TextBlock Text="{Binding user.nome}" />
-                                        <TextBlock Text="{Binding user.email}" />
+                                        <Image Source="{Binding livro.imagePath}" />
+                                        <TextBlock Text="{Binding livro.titulo}" />
                                     </StackPanel>
                                 </Border>
                             </DataTemplate>

@@ -21,7 +21,7 @@ namespace Emprestae
 
         #region Variáveis Estáticas
 
-        private static string host = "http://www.emprestei.dev";
+        private static string host = "http://service.emprestae.com";
 
         #endregion
 
@@ -35,41 +35,13 @@ namespace Emprestae
 
         #region Métodos
 
-        private void post<T>(string url, Dictionary<string, object> args, Action<T> success, Action error)
-        {
-            post(new Uri(url, UriKind.Absolute),
-                args,
-                (sender, requestArgs) => {
-                    if (requestArgs.failed)
-                    {
-                        if (error != null)
-                            error();
-                        else
-                            Debug.WriteLine("EmprestaeServices - An error occurred but no error handling was defined");
-                    }
-                    else
-                    {
-                        string data = Util.decodeResponseToString(requestArgs.result as HttpWebResponse);
-                        T response = default(T);
-                        if (typeof(T) == typeof(string))
-                        {
-                            response = (T)(object)data;
-                        }
-                        else
-                        {
-                            response = Util.deserializeObject<T>(data);
-                        }
-                        success(response);
-                    }
-                });
-
- 
-        }
+        #region Métodos HTTP Genéricos
 
         /// <summary>
-        /// Método GET genérico a ser utilizada pelos outros métodos
+        /// Método GET genérico a ser utilizado pelos outros métodos
         /// </summary>
         /// <typeparam name="T">Tipo do objeto de resposta</typeparam>
+        /// <param name="url">Url da chamada</param>
         /// <param name="args">Dicionário de parâmetros da chamada</param>
         /// <param name="success">Callback de Sucesso</param>
         /// <param name="error">Callback de erro</param>
@@ -104,6 +76,130 @@ namespace Emprestae
                     }
                 });
         }
+
+        /// <summary>
+        /// Método POST genérico a ser utilizado pelos outros métodos
+        /// </summary>
+        /// <typeparam name="T">Tipo do objeto de resposta</typeparam>
+        /// <param name="url">Url da chamada</param>
+        /// <param name="args">Dicionário de parâmetros da chamada</param>
+        /// <param name="success">Callback de Sucesso</param>
+        /// <param name="error">Callback de erro</param>
+        /// <author>Renato Vieira</author>
+        /// <email>vieirarenato.rpv@gmail.com</email>
+        private void post<T>(string url, Dictionary<string, object> args, Action<T> success, Action error)
+        {
+            post(new Uri(url, UriKind.Absolute),
+                args,
+                (sender, requestArgs) =>
+                {
+                    if (requestArgs.failed)
+                    {
+                        if (error != null)
+                            error();
+                        else
+                            Debug.WriteLine("EmprestaeServices - An error occurred but no error handling was defined");
+                    }
+                    else
+                    {
+                        string data = Util.decodeResponseToString(requestArgs.result as HttpWebResponse);
+                        T response = default(T);
+                        if (typeof(T) == typeof(string))
+                        {
+                            response = (T)(object)data;
+                        }
+                        else
+                        {
+                            response = Util.deserializeObject<T>(data);
+                        }
+                        success(response);
+                    }
+                });
+
+
+        }
+
+        /// <summary>
+        /// Método PUT genérico a ser utilizado pelos outros métodos
+        /// </summary>
+        /// <typeparam name="T">Tipo do objeto de resposta</typeparam>
+        /// <param name="url">Url da chamada</param>
+        /// <param name="args">Dicionário de parâmetros da chamada</param>
+        /// <param name="success">Callback de Sucesso</param>
+        /// <param name="error">Callback de erro</param>
+        /// <author>Renato Vieira</author>
+        /// <email>vieirarenato.rpv@gmail.com</email>
+        private void put<T>(string url, Dictionary<string, object> args, Action<T> success, Action error)
+        {
+            put(new Uri(url, UriKind.Absolute),
+                args,
+                (sender, requestArgs) =>
+                {
+                    if (requestArgs.failed)
+                    {
+                        if (error != null)
+                            error();
+                        else
+                            Debug.WriteLine("EmprestaeServices - An error occurred but no error handling was defined");
+                    }
+                    else
+                    {
+                        string data = Util.decodeResponseToString(requestArgs.result as HttpWebResponse);
+                        T response = default(T);
+                        if (typeof(T) == typeof(string))
+                        {
+                            response = (T)(object)data;
+                        }
+                        else
+                        {
+                            response = Util.deserializeObject<T>(data);
+                        }
+                        success(response);
+                    }
+                });
+        }
+
+        /// <summary>
+        /// Método DELETE genérico a ser utilizado pelos outros métodos
+        /// </summary>
+        /// <typeparam name="T">Tipo do objeto de resposta</typeparam>
+        /// <param name="url">Url da chamada</param>
+        /// <param name="args">Dicionário de parâmetros da chamada</param>
+        /// <param name="success">Callback de Sucesso</param>
+        /// <param name="error">Callback de erro</param>
+        /// <author>Renato Vieira</author>
+        /// <email>vieirarenato.rpv@gmail.com</email>
+        private void delete<T>(string url, Dictionary<string, object> args, Action<T> success, Action error)
+        {
+            delete(new Uri(url, UriKind.Absolute),
+                args,
+                (sender, requestArgs) =>
+                {
+                    if (requestArgs.failed)
+                    {
+                        if (error != null)
+                            error();
+                        else
+                            Debug.WriteLine("EmprestaeServices - An error occurred but no error handling was defined");
+                    }
+                    else
+                    {
+                        string data = Util.decodeResponseToString(requestArgs.result as HttpWebResponse);
+                        T response = default(T);
+                        if (typeof(T) == typeof(string))
+                        {
+                            response = (T)(object)data;
+                        }
+                        else
+                        {
+                            response = Util.deserializeObject<T>(data);
+                        }
+                        success(response);
+                    }
+                });
+        }
+
+        #endregion
 
         #region Métodos do Usuário
 
@@ -206,7 +302,7 @@ namespace Emprestae
                 {"email",this.userInfo.email},
             };
 
-            get(host, arg, success, error);
+            get<UserResponse>(host, arg, success, error);
         }
 
         /// <summary>
@@ -222,17 +318,26 @@ namespace Emprestae
                 {"metodo","getAllUsersByEmail"},
                 {"email", email},
             };
-            get(host, arg, success, error);
+            get<UserResponse>(host, arg, success, error);
         }
 
         #endregion
 
-
         #region Métodos de Objetos
 
-        #region Métodos de Livros
+        public void GetUserObjs(Action<ObjResponse> success, Action error)
+        {
+            Dictionary<string, object> arg = new Dictionary<string, object>()
+            {
+                {"metodo","getAllUsersByEmail"},
+                {"userID", this.userInfo.idusuario},
+            };
+            get<ObjResponse>(host, arg, success, error);
+        }
 
         #endregion
+
+        #region Métodos de Livros
 
         #endregion
 

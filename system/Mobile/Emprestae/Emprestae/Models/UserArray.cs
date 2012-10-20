@@ -17,6 +17,5 @@ namespace Emprestae.Models
     {
         [DataMember]
         public User user { get; set; }
-
     }
 }

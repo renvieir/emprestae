@@ -81,6 +81,7 @@ namespace Emprestae.Pages
         {
             latitudeTextBlock.Text = e.Position.Location.Latitude.ToString("0.000");
             longitudeTextBlock.Text = e.Position.Location.Longitude.ToString("0.000");
+            Map.Center = e.Position.Location;
         }
 
         protected override void OnNavigatedFrom(System.Windows.Navigation.NavigationEventArgs e)
