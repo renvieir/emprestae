@@ -1,3 +1,6 @@
 *.~*
 /system/WebService/nbproject/*
 *.mwb.bak
+
+system/Site/log/*
+system/WebService/services/log/*

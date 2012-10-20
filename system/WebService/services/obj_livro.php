@@ -3,7 +3,7 @@
 $app->post("/createBook", "createObjBook");
 $app->put("/updateBook", "updateObjBook");
 $app->get("/getBookInfo/:id", "getObjBookInfo");
-$app->get("/getAllBooks/:id", "getAllObjBooks");
+$app->get("/getAllBooks", "getAllObjBooks");
 $app->delete("/removeBook", "removeObjBook");
 
 function createObjBook() {
@@ -92,7 +92,7 @@ function getObjBookInfo($id) {
 	$response["status"] = 0;
 	$dbh = getConnection();
 
-	$sql = "select * from $bookTable where idLivro = :id";
+	$sql = "select * from $bookTable";
 	$stmt = $dbh->prepare($sql);
 	$stmt->bindParam(":id", $id);
 	$stmt->execute();
@@ -108,22 +108,21 @@ function getObjBookInfo($id) {
 	return;
 }
 
-function getAllObjBooks($id) {
+function getAllObjBooks() {
 
 	global $bookTable;
 
 	$response["status"] = 0;
 	$dbh = getConnection();
 
-	$sql = "select * from $bookTable where idLivro != :id";
+	$sql = "select * from $bookTable";
 	$stmt = $dbh->prepare($sql);
-	$stmt->bindParam(":id", $id);
 	$stmt->execute();
 
 	/* get all book information as a associative array */
 	$tmp = $stmt->fetchAll(PDO::FETCH_CLASS);
-	$response["objects"] = storeElements("object", $tmp);
-	if ($response["objects"])
+	$response["livros"] = storeElements("livro", $tmp);
+	if ($response["livros"])
 		$response["status"] = 1;
 
 	closeConnection($dbh);

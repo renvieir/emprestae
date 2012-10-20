@@ -3,7 +3,7 @@
 $app->post("/createGame", "createObjGame");
 $app->put("/updateGame", "updateObjGame");
 $app->get("/getGameInfo/:id", "getObjGameInfo");
-$app->get("/getAllGames/:id", "getAllObjGames");
+$app->get("/getAllGames", "getAllObjGames");
 $app->delete("/removeGame", "removeObjGame");
 
 function createObjGame() {
@@ -105,16 +105,15 @@ function getObjGameInfo($id) {
 	return;
 }
 
-function getAllObjGames($id) {
+function getAllObjGames() {
 
 	global $gameTable;
 
 	$response["status"] = 0;
 	$dbh = getConnection();
 
-	$sql = "select * from $gameTable where idJogo != :id";
+	$sql = "select * from $gameTable";
 	$stmt = $dbh->prepare($sql);
-	$stmt->bindParam(":id", $id);
 	$stmt->execute();
 
 	/* get user information as a associative array */
