@@ -1,6 +1,15 @@
 *.~*
 /system/WebService/nbproject/*
+/system/Site/nbproject/*
 *.mwb.bak
+
+/system/Mobile/INdT/Services/Bin/*
+/system/Mobile/INdT/Services/obj/*
+/system/Mobile/INdT/Views/Bin/*
+/system/Mobile/INdT/Views/obj/*
+/system/Mobile/Emprestae/Emprestae/obj/*
+/system/Mobile/Emprestae/Emprestae.suo
 
 system/Site/log/*
 system/WebService/services/log/*
+/system/Site/nbproject/private/
