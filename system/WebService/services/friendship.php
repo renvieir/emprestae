@@ -4,6 +4,7 @@ $app->post("/requestFriend", "requestFriendship");
 $app->put("/acceptFriend", "addFriendship");
 $app->delete("/removeFriends", "deleteFriendship");
 $app->get("/getFriends/:id1", "getFriends");
+$app->get("/getFriendsRequest/:id1", "getFriendsRequest");
 
 function requestFriendship() {
 	
@@ -127,6 +128,34 @@ function getFriends($id1) {
 					WHERE idusuario_a = :id1 and status = 1 UNION SELECT
 						idusuario_a AS friend FROM $friendTable WHERE
 							idusuario_b = :id1 and status = 1) as tmp WHERE
+													idusuario = tmp.friend";
+
+	$stmt = $dbh->prepare($sql);
+	$stmt->bindParam(":id1", $id1);
+	$stmt->execute();
+
+	/* get user information as a associative array */
+	$tmp = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	$response["users"] = storeElements("user", $tmp);
+	if ($response["users"])
+		$response["status"] = 1;
+
+	closeConnection($dbh);
+	echo json_encode($response);
+}
+
+function getFriendsRequest($id1) {
+
+	global $friendTable;
+	
+	$response["status"] = 0;
+	$dbh = getConnection();
+
+	$sql = "SELECT idusuario, nome, email, addressLat, addressLong, imagePath
+				from usuario, (SELECT idusuario_b AS friend FROM $friendTable
+					WHERE idusuario_a = :id1 and status = 1 UNION SELECT
+						idusuario_a AS friend FROM $friendTable WHERE
+							idusuario_b = :id1 and status = 0) as tmp WHERE
 													idusuario = tmp.friend";
 
 	$stmt = $dbh->prepare($sql);
