@@ -4,6 +4,7 @@ $app->post("/createGame", "createObjGame");
 $app->put("/updateGame", "updateObjGame");
 $app->get("/getGameInfo/:id", "getObjGameInfo");
 $app->get("/getAllGames", "getAllObjGames");
+$app->get("/getSimilarGames/:titulo", "getSimilarObjGames");
 $app->delete("/removeGame", "removeObjGame");
 
 function createObjGame() {
@@ -22,7 +23,8 @@ function createObjGame() {
 	/* lendo dados do json */
 	$title = $json->titulo; $platform = $json->plataforma;
 	$house = $json->produtora;
-	$imPath = createImage($title, $json->image, false);
+	//$imPath = createImage($title, $json->image, false);
+	$imPath = null;
 
 	$response["status"] = 1;
 	$dbh = getConnection();
@@ -62,7 +64,8 @@ function updateObjGame() {
 	/* lendo dados do json */
 	$title = $json->titulo; $platform = $json->plataforma;
 	$house = $json->produtora; $id = $json->idJogo;
-	$imPath = createImage($title, $json->image, false);
+	//$imPath = createImage($title, $json->image, false);
+	$imPath = null;
 
 	$response["status"] = 1;
 	$dbh = getConnection();
@@ -113,6 +116,28 @@ function getAllObjGames() {
 	$dbh = getConnection();
 
 	$sql = "select * from $gameTable";
+	$stmt = $dbh->prepare($sql);
+	$stmt->execute();
+
+	/* get user information as a associative array */
+	$tmp = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	$response["jogos"] = storeElements("jogo", $tmp);
+	if ($response["jogos"])
+		$response["status"] = 1;
+
+	closeConnection($dbh);
+	echo json_encode($response);
+	return;
+}
+
+function getSimilarObjGames($titulo) {
+
+	global $gameTable;
+
+	$response["status"] = 0;
+	$dbh = getConnection();
+
+	$sql = "select * from $gameTable where titulo like '%$titulo%'";
 	$stmt = $dbh->prepare($sql);
 	$stmt->execute();
 

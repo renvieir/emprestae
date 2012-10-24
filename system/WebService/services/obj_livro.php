@@ -4,6 +4,7 @@ $app->post("/createBook", "createObjBook");
 $app->put("/updateBook", "updateObjBook");
 $app->get("/getBookInfo/:id", "getObjBookInfo");
 $app->get("/getAllBooks", "getAllObjBooks");
+$app->get("/getSimilarBooks/:titulo", "getSimilarObjBooks");
 $app->delete("/removeBook", "removeObjBook");
 
 function createObjBook() {
@@ -22,7 +23,8 @@ function createObjBook() {
 	/* lendo dados do json */
 	$title = $json->titulo; $author = $json->autor; $ed = $json->edicao;
 	$house = $json->editora;
-	$imPath = createImage($title, $json->image, false);
+	//$imPath = createImage($title, $json->image, false);
+	$imPath = null;
 
 	$response["status"] = 1;
 	$dbh = getConnection();
@@ -63,7 +65,8 @@ function updateObjBook() {
 	/* lendo dados do json */
 	$title = $json->titulo; $author = $json->autor; $ed = $json->edicao;
 	$house = $json->editora; $id = $json->idLivro;
-	$imPath = createImage($title, $json->image, false);
+	//$imPath = createImage($title, $json->image, false);
+	$imPath = null;
 
 	$response["status"] = 1;
 	$dbh = getConnection();
@@ -116,6 +119,28 @@ function getAllObjBooks() {
 	$dbh = getConnection();
 
 	$sql = "select * from $bookTable";
+	$stmt = $dbh->prepare($sql);
+	$stmt->execute();
+
+	/* get all book information as a associative array */
+	$tmp = $stmt->fetchAll(PDO::FETCH_CLASS);
+	$response["livros"] = storeElements("livro", $tmp);
+	if ($response["livros"])
+		$response["status"] = 1;
+
+	closeConnection($dbh);
+	echo json_encode($response);
+	return;
+}
+
+function getSimilarObjBooks($titulo) {
+
+	global $bookTable;
+
+	$response["status"] = 0;
+	$dbh = getConnection();
+
+	$sql = "select * from $bookTable where titulo like '%$titulo%'";
 	$stmt = $dbh->prepare($sql);
 	$stmt->execute();
 
