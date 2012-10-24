@@ -1,6 +1,7 @@
 <?php
 
-$app->post("/createEmp", "createEmprestimo");
+$app->post("/requestEmp", "solicitaEmprestimo");
+$app->put("/acceptEmp", "aceitaEmprestar");
 $app->get("/getEmpPorMim/:id1", "getEmpPorMim");
 $app->get("/getEmpDeMim/:id1", "getEmpDeMim");
 $app->delete("/removeEmp", "removeEmprestimo");
@@ -10,7 +11,7 @@ $app->put("/changeEmpStatus", "changeEmprestimoStatus");
 
 
 /* date format: yyyy/mm/dd */
-function createEmprestimo(){
+function solicitaEmprestimo(){
 
 	global $loanTable, $patrimonio;
 
@@ -49,6 +50,39 @@ function createEmprestimo(){
 		$stmt->bindParam(":objType", $objType);
 		$stmt->bindParam(":stDate", $stDate);
 		$stmt->bindParam(":endDate", $endDate);
+		$stmt->execute();
+	} catch(PDOException $e) {
+		$response["status"] = 0;
+	}
+
+	closeConnection($dbh);
+	echo json_encode($response);
+	return;
+}
+
+function aceitaEmprestar() {
+
+	global $loanTable;
+
+	/* verifica se existe alguma informacao no corpo da mensagem */
+	$request = Slim::getInstance()->request();
+	$json = readRequestBody($request);
+	if (!$json) {
+		$response["status"] = 0;
+		echo json_encode($response);
+		return;
+	}
+
+	/* lendo dados do json */
+	$idEmp = $json->idemprestimo;
+
+	$response["status"] = 1;
+	$dbh = getConnection();
+
+	$sql = "update $loanTable set status = 1 where idemprestimo = :idEmp";
+	try {
+		$stmt = $dbh->prepare($sql);
+		$stmt->bindParam(":idEmp", $idEmp);
 		$stmt->execute();
 	} catch(PDOException $e) {
 		$response["status"] = 0;
@@ -169,7 +203,7 @@ function updateEmprestimo(){
 	return;
 }
 
-/* status tem que ser um inteiro: 0 ou 1 */
+/* status tem que ser um inteiro: 2 ou 3 */
 function changeEmprestimoStatus() {
 
 	global $loanTable;

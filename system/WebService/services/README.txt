@@ -5,10 +5,14 @@ os seguintes campos no JSON: userId, objId, objType.
 
 Por enquanto desprezar as definições abaixo!
 
+
+
 /** Conexões com o Banco de Dados **/
 
 function getConnection();
 function closeConnection($dbh);
+
+
 
 /******* Funções para Controle de Usuário ********/
 
@@ -33,16 +37,26 @@ function checkUser(email, pwd);
 uma lista e status - se houve retorno ou nao.
 function getAllUsers(email)
 
+-- Retorna uma lista de usuários em um raio de 100m com base na posição atual
+getCloseUsers/:userId/:lat/:long
+
+
+
 /******** Funções para Controle de Amizade ******/
 
--- cria relação de amizade entre dois ids de usuários
-function createFriendship(userId1, userId2);
+-- solicita uma nova amizade, então o status será 0
+function requesteFriend(userId1, userId2);
+
+-- aceita a solicitação de amizade, status 1
+function acceptFriend(userId1, userId2);
 
 -- remove relação de amizade entre dois ids de usuários
 function deleteFriendship(userId1, userId2);
 
 -- retorna uma lista com o id de todos os amigos de userId1
 function getFriends(userId1);
+
+
 
 
 /******** Funções para Controle de Livros ******/
@@ -60,6 +74,8 @@ function getObjBookInfo(titulo);
 function removeObjBook(titulo);
 
 
+
+
 /******** Funções para Controle de Jogos *******/
 
 -- adiciona um jogo ao banco
@@ -73,6 +89,8 @@ function getObjJogoInfo(titulo);
 
 -- remove-se um jogo do banco
 function removeObjJogo(titulo);
+
+
 
 
 /******** Funções para Controle de Filmes *******/
@@ -90,6 +108,8 @@ function getObjFilmeInfo(titulo);
 function removeObjFilme(titulo);
 
 
+
+
 /******** Funções para Controle de Objetos de um Usuário ******/
 
 -- retorna uma lista de elementos por objeto pertencente a um usuário, o json
@@ -103,10 +123,35 @@ function addUserObj(userID, ObjID, objTitulo);
 function removeUserObj(userID, objID, objTitulo);
 
 
+
+
 /******** Funções para Controle de Empréstimo ********/
 
-function createEmprestimo(user1, user2, tipoObj, objID, dataEmprestimo, dataDevolucao);
-function updateEmprestimo(user1, user2, tipoObj, objID, dataEmprestimo, dataDevolucao);
-function getEmprestimoInfo(emprestimoID);
-function changeEmprestimoStatus(emprestimoID);
-function removeEmprestimo(emprestimoID);
+-- solicita empréstimo, os parâmetros são todas as colunas do banco, menos o
+status
+$app->post("/requestEmp", "solicitaEmprestimo");
+
+-- aceitar solicitação de empréstimo, parâmetro é apenas o id do empréstimo
+$app->put("/acceptEmp", "aceitaEmprestar");
+
+-- retorna os empréstimos que o usuário solicitou
+$app->get("/getEmpPorMim/:id1", "getEmpPorMim");
+
+-- retorna os empréstimos que o usuário aceitou solicitação
+$app->get("/getEmpDeMim/:id1", "getEmpDeMim");
+
+-- remove o empréstimo com base no id do mesmo
+$app->delete("/removeEmp", "removeEmprestimo");
+
+-- parâmetros: idemprestimo e data da devolução do empréstimo
+$app->put("/updateEmpDate", "updateEmprestimo");
+
+-- parâmetros: idemprestimo e status do empréstimo
+$app->put("/changeEmpStatus", "changeEmprestimoStatus");
+
+status do empréstimo:
+
+	- 0: solicitado empréstimo de id1 para id2;
+	- 1: empréstimo realizado;
+	- 2: empréstimo finalizado (devolvido);
+	- 3: empréstimo cancelado.
