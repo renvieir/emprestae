@@ -65,9 +65,16 @@ namespace Emprestae
 
         private void error()
         {
-            Dispatcher.BeginInvoke(() => {
+            loadingSplash.Visibility = Visibility.Collapsed;
+            Dispatcher.BeginInvoke(() =>
+            {
                 MessageBox.Show("Tivemos um erro com o servidor, verifique seus dados e tente novamente mais tarde");
             });
+        }
+
+        private void ApplicationBarInfoButton_Click(object sender, EventArgs e)
+        {
+            NavigationService.Navigate(new Uri("/Pages/Info.xaml",UriKind.Relative));
         }
     }
 }
