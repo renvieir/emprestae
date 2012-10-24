@@ -13,12 +13,15 @@ using Microsoft.Phone.Controls;
 using System.Windows.Navigation;
 using Emprestae.Models;
 using System.Diagnostics;
+using Microsoft.Phone.Shell;
 
 namespace Emprestae.Pages
 {
     public partial class Home : PhoneApplicationPage
     {
         EmprestaeWebService emprestae = (Application.Current as App).emprestae;
+        ApplicationBarIconButton searchFriendButton, addFriendButton, searchObjButton, addObjButton;
+
         public Home()
         {
             InitializeComponent();
@@ -28,24 +31,8 @@ namespace Emprestae.Pages
         {
             base.OnNavigatedTo(e);
             emprestae.GetUserInfo(success, error);
-            //if (emprestae.userInfo == null)
-            //{
-            //    emprestae.GetUserInfo(success, error);
-            //}
-            //else
-            //{
-            //    userPanel.DataContext = emprestae.userInfo;
-            //}
-
             emprestae.GetAllUsersButMe(success, error);
         }
-
-        //void success(UserInfo response)
-        //{
-        //    Dispatcher.BeginInvoke(() => {
-        //        userPanel.DataContext = response;
-        //    });
-        //}
 
         void success(UserResponse response)
         {
@@ -65,6 +52,10 @@ namespace Emprestae.Pages
         private void ApplicationBarIconButton_Click(object sender, EventArgs e)
         {
             NavigationService.Navigate(new Uri("/Pages/Mapa.xaml",UriKind.Relative));
+        }
+
+        private void Panorama_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
         }
     }
 }
