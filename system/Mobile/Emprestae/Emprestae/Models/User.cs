@@ -29,5 +29,8 @@ namespace Emprestae.Models
 
         [DataMember]
         public string addressLong { get; set; }
+
+        [DataMember]
+        public string imagePath { get; set; }
     }
 }
