@@ -1,0 +1,81 @@
+﻿<phone:PhoneApplicationPage 
+    x:Class="Emprestae.Pages.AddObjeto"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+    xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+    xmlns:controls="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="696"
+    FontFamily="{StaticResource PhoneFontFamilyNormal}"
+    FontSize="{StaticResource PhoneFontSizeNormal}"
+    Foreground="{StaticResource PhoneForegroundBrush}"
+    SupportedOrientations="Portrait"  Orientation="Portrait"
+    shell:SystemTray.IsVisible="True">
+
+    <!--LayoutRoot is the root grid where all page content is placed-->
+    <StackPanel 
+        x:Name="LayoutRoot"
+        Background="Transparent">
+        <!--Pivot Control-->
+        <controls:Pivot Title="EMPRESTAE">
+            <!--Pivot item one-->
+            <controls:PivotItem Header="livro">
+                <StackPanel>
+                    <TextBlock Text="Titulo"/>
+                    <TextBox Name="livroTitutlo"/>
+                    <TextBlock Text="Autor"/>
+                    <TextBox Name="livroAutor"/>
+                    <TextBlock Text="Edicao"/>
+                    <TextBox Name="livroEdicao"/>
+                    <TextBlock Text="Editora"/>
+                    <TextBox Name="livroEditora"/>
+                </StackPanel>
+            </controls:PivotItem>
+
+            <!--Pivot item two-->
+            <controls:PivotItem Header="filme">
+                <StackPanel>
+                    <TextBlock Text="Titulo"/>
+                    <TextBox />
+                    <TextBlock Text="Diretor"/>
+                    <TextBox />
+                    <TextBlock Text="Distribuidora"/>
+                    <TextBox />
+                </StackPanel>
+            </controls:PivotItem>
+
+            <!--Pivot item three-->
+            <controls:PivotItem Header="jogo">
+                <StackPanel>
+                    <TextBlock Text="Titulo"/>
+                    <TextBox />
+                    <TextBlock Text="Plataforma"/>
+                    <TextBox />
+                    <TextBlock Text="Produtora"/>
+                    <TextBox />
+                </StackPanel>
+            </controls:PivotItem>
+        </controls:Pivot>
+        <TextBlock Text="Imagem" />
+        <StackPanel Orientation="Horizontal">
+            <Button Content="Carregar imagem" Click="loadPicture_OnClick"/>
+            <Button Content="Tirar foto" Click="takePicture_OnClick"/>
+        </StackPanel>
+        <Image />
+    </StackPanel>
+
+    <!--Sample code showing usage of ApplicationBar-->
+    <phone:PhoneApplicationPage.ApplicationBar>
+        <shell:ApplicationBar
+            IsVisible="True"
+            IsMenuEnabled="True">
+            <shell:ApplicationBarIconButton 
+                x:Name="appbar_button2"
+                IconUri="/Images/appbar.check.rest.png"
+                Text="adicionar"/>
+        </shell:ApplicationBar>
+    </phone:PhoneApplicationPage.ApplicationBar>
+    
+</phone:PhoneApplicationPage>
