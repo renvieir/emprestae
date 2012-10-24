@@ -49,6 +49,7 @@ CREATE  TABLE IF NOT EXISTS `emprestae_db`.`amizade` (
   `idamizade` INT NOT NULL AUTO_INCREMENT ,
   `idusuario_a` INT NOT NULL ,
   `idusuario_b` INT NOT NULL ,
+  `status` TINYINT(1) NOT NULL DEFAULT 0 ,
   PRIMARY KEY (`idamizade`) ,
   INDEX `idusuario_a` (`idusuario_a` ASC) ,
   INDEX `idusuario_b` (`idusuario_b` ASC) ,
@@ -108,7 +109,7 @@ CREATE  TABLE IF NOT EXISTS `emprestae_db`.`emprestimo` (
   `idObj` INT NOT NULL ,
   `dtEmprestimo` DATETIME NULL ,
   `dtDevolucao` DATETIME NULL ,
-  `status` TINYINT(1)  NULL ,
+  `status` INT NULL ,
   PRIMARY KEY (`idemprestimo`) ,
   INDEX `fk_idUsuario1` (`fk_idUser1` ASC) ,
   INDEX `fk_idUsuario2` (`fk_idUser2` ASC) ,
@@ -215,11 +216,11 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `emprestae_db`;
-INSERT INTO `emprestae_db`.`usuario` (`idusuario`, `email`, `nome`, `senha`, `addressLat`, `addressLong`, `imagePath`) VALUES (1, 'm1', 'n1', 'p1', NULL, NULL, 'http://localhost/sd/emprestei/system/WebService/services/images/users/defaultUserImage.png');
-INSERT INTO `emprestae_db`.`usuario` (`idusuario`, `email`, `nome`, `senha`, `addressLat`, `addressLong`, `imagePath`) VALUES (2, 'm2', 'n2', 'p2', NULL, NULL, 'http://localhost/sd/emprestei/system/WebService/services/images/users/defaultUserImage.png');
-INSERT INTO `emprestae_db`.`usuario` (`idusuario`, `email`, `nome`, `senha`, `addressLat`, `addressLong`, `imagePath`) VALUES (3, 'm3', 'n3', 'p3', NULL, NULL, 'http://localhost/sd/emprestei/system/WebService/services/images/users/defaultUserImage.png');
-INSERT INTO `emprestae_db`.`usuario` (`idusuario`, `email`, `nome`, `senha`, `addressLat`, `addressLong`, `imagePath`) VALUES (4, 'm4', 'n4', 'p4', NULL, NULL, 'http://localhost/sd/emprestei/system/WebService/services/images/users/defaultUserImage.png');
-INSERT INTO `emprestae_db`.`usuario` (`idusuario`, `email`, `nome`, `senha`, `addressLat`, `addressLong`, `imagePath`) VALUES (5, 'm5', 'n5', 'p5', NULL, NULL, 'http://localhost/sd/emprestei/system/WebService/services/images/users/defaultUserImage.png');
+INSERT INTO `emprestae_db`.`usuario` (`idusuario`, `email`, `nome`, `senha`, `addressLat`, `addressLong`, `imagePath`) VALUES (1, 'm1', 'n1', 'p1', -3.1133333, -60.0252778, 'www.services.emprestae.com/services/images/users/defaultUserImage.png');
+INSERT INTO `emprestae_db`.`usuario` (`idusuario`, `email`, `nome`, `senha`, `addressLat`, `addressLong`, `imagePath`) VALUES (2, 'm2', 'n2', 'p2', -3.11, -60.0252778, 'www.services.emprestae.com/services/images/users/defaultUserImage.png');
+INSERT INTO `emprestae_db`.`usuario` (`idusuario`, `email`, `nome`, `senha`, `addressLat`, `addressLong`, `imagePath`) VALUES (3, 'm3', 'n3', 'p3', -23.9501664, -46.325472, 'www.services.emprestae.com/services/images/users/defaultUserImage.png');
+INSERT INTO `emprestae_db`.`usuario` (`idusuario`, `email`, `nome`, `senha`, `addressLat`, `addressLong`, `imagePath`) VALUES (4, 'm4', 'n4', 'p4', 0, NULL, 'www.services.emprestae.com/services/images/users/defaultUserImage.png');
+INSERT INTO `emprestae_db`.`usuario` (`idusuario`, `email`, `nome`, `senha`, `addressLat`, `addressLong`, `imagePath`) VALUES (5, 'm5', 'n5', 'p5', NULL, NULL, 'www.services.emprestae.com/services/images/users/defaultUserImage.png');
 
 COMMIT;
 
@@ -228,9 +229,12 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `emprestae_db`;
-INSERT INTO `emprestae_db`.`amizade` (`idamizade`, `idusuario_a`, `idusuario_b`) VALUES (1, 1, 2);
-INSERT INTO `emprestae_db`.`amizade` (`idamizade`, `idusuario_a`, `idusuario_b`) VALUES (2, 3, 2);
-INSERT INTO `emprestae_db`.`amizade` (`idamizade`, `idusuario_a`, `idusuario_b`) VALUES (3, 3, 1);
+INSERT INTO `emprestae_db`.`amizade` (`idamizade`, `idusuario_a`, `idusuario_b`, `status`) VALUES (1, 1, 2, 1);
+INSERT INTO `emprestae_db`.`amizade` (`idamizade`, `idusuario_a`, `idusuario_b`, `status`) VALUES (2, 3, 2, 1);
+INSERT INTO `emprestae_db`.`amizade` (`idamizade`, `idusuario_a`, `idusuario_b`, `status`) VALUES (3, 3, 1, 1);
+INSERT INTO `emprestae_db`.`amizade` (`idamizade`, `idusuario_a`, `idusuario_b`, `status`) VALUES (4, 5, 4, 0);
+INSERT INTO `emprestae_db`.`amizade` (`idamizade`, `idusuario_a`, `idusuario_b`, `status`) VALUES (5, 2, 4, 0);
+INSERT INTO `emprestae_db`.`amizade` (`idamizade`, `idusuario_a`, `idusuario_b`, `status`) VALUES (6, 5, 1, 0);
 
 COMMIT;
 

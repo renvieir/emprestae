@@ -9,6 +9,7 @@ $app->post("/checkUser", "checkUser");
 $app->get("/getUserInfo/:email", "getUserInfo");
 $app->get("/getAllUsersBut/:email", "getAllUsersBut");
 $app->get("/getAllUsersByEmail/:email", "getAllUsersByEmail");
+$app->get("/getCloseUsers/:userId/:lat/:long", "getCloseUsers");
 
 function createUser() {
 
@@ -227,6 +228,88 @@ function getAllUsersByEmail($mail) {
 	closeConnection($dbh);
 	echo json_encode($response);
 	return;
+}
+
+function getCloseUsers($id1, $userLat, $userLong) {
+
+	global $friendTable;
+	
+	$response["status"] = 0;
+	$dbh = getConnection();
+
+	$sql = "SELECT idusuario, nome, email, addressLat, addressLong, imagePath
+				from usuario, (SELECT idusuario_b AS friend FROM $friendTable
+					WHERE idusuario_a = :id1 UNION SELECT idusuario_a AS friend
+						FROM $friendTable WHERE idusuario_b = :id1) as tmp WHERE
+							idusuario = tmp.friend";
+
+	$stmt = $dbh->prepare($sql);
+	$stmt->bindParam(":id1", $id1);
+	$stmt->execute();
+
+	/* get user information as a associative array */
+	$elements = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	$type = "user";
+	if (count($elements) != 0) {
+		$arr = Array();
+		$i = 0;
+		$coordUser = coordenadasEsfericas($userLat, $userLong);
+		echo "ok2\n";
+		foreach ($elements as $elem) {
+			$arr[$i] = Array();
+			$arr[$i][$type] = Array();
+			foreach ($elements[$i] as $key => $value) {
+				if ($key == "addressLat") {
+					$friendLat = $elements[$i]["addressLat"];
+					$friendLong = $elements[$i]["addressLong"];
+					$coordFriend=coordenadasEsfericas($friendLat, $friendLong);
+
+					if( !distBetweenUsers($coordUser, $coordFriend) ) {
+						$arr[$i][$type]	= null;
+						unset($arr[$i]);
+						break;
+					}
+				}
+				$arr[$i][$type][$key] = ($value) ? $value: null;
+			}
+			$i++;
+		}
+	}
+
+	$response["users"] = $arr;
+	if ($response["users"])
+		$response["status"] = 1;
+
+	closeConnection($dbh);
+	echo json_encode($response);
+	return;
+}
+
+function coordenadasEsfericas ($lat, $long) {
+
+	$lat *= pi()/180.0;
+	$long *= pi()/180.0;
+
+	$coord = Array();
+	$coord["x"] = sin($long)*cos($lat);
+	$coord["y"] = cos($long)*cos($lat);
+	$coord["z"] = sin($lat);
+
+	return $coord;
+}
+
+function distBetweenUsers ($coordUser, $coordFriend) {
+
+	$alpha = acos( $coordUser["x"]*$coordFriend["x"] +
+		$coordUser["y"]*$coordFriend["y"] + $coordUser["z"]*$coordFriend["z"] );
+	
+	$raioTerra = 6378;
+	$raioPadrao = 100;
+
+	if ($alpha*$raioTerra <= $raioPadrao)
+		return 1;
+	
+	return 0;
 }
 
 ?>
