@@ -1,24 +1,23 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
-using System.Windows.Ink;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
-using System.Runtime.Serialization;
+using Microsoft.Phone.Controls;
 
-namespace Emprestae.Models
+namespace Emprestae.Pages
 {
-    [DataContract]
-    public class UserInfo
+    public partial class SearchObj : PhoneApplicationPage
     {
-        [DataMember]
-        public int status { get; set; }
-
-        [DataMember]
-        public User user { get; set; }
+        public SearchObj()
+        {
+            InitializeComponent();
+        }
     }
 }

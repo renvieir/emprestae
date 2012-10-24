@@ -24,7 +24,7 @@
             <controls:PivotItem Header="livro">
                 <StackPanel>
                     <TextBlock Text="Titulo"/>
-                    <TextBox Name="livroTitutlo"/>
+                    <TextBox Name="livroTitulo"/>
                     <TextBlock Text="Autor"/>
                     <TextBox Name="livroAutor"/>
                     <TextBlock Text="Edicao"/>
@@ -58,12 +58,12 @@
                 </StackPanel>
             </controls:PivotItem>
         </controls:Pivot>
-        <TextBlock Text="Imagem" />
+        <!--<TextBlock Text="Imagem" />
         <StackPanel Orientation="Horizontal">
             <Button Content="Carregar imagem" Click="loadPicture_OnClick"/>
-            <Button Content="Tirar foto" Click="takePicture_OnClick"/>
+            <Button Content="Capturar imagem" Click="capturePicture_OnClick"/>
         </StackPanel>
-        <Image />
+        <Image Name="myImage" />-->
     </StackPanel>
 
     <!--Sample code showing usage of ApplicationBar-->
@@ -74,7 +74,8 @@
             <shell:ApplicationBarIconButton 
                 x:Name="appbar_button2"
                 IconUri="/Images/appbar.check.rest.png"
-                Text="adicionar"/>
+                Text="adicionar"
+                Click="AddButton_OnClick"/>
         </shell:ApplicationBar>
     </phone:PhoneApplicationPage.ApplicationBar>
     

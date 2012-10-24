@@ -81,12 +81,12 @@
     <Compile Include="Models\Livro.cs" />
     <Compile Include="Models\LivroArray.cs" />
     <Compile Include="Models\ObjResponse.cs" />
+    <Compile Include="Models\Response.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\UserArray.cs" />
-    <Compile Include="Models\UserInfo.cs" />
     <Compile Include="Models\UserResponse.cs" />
-    <Compile Include="Pages\AddObjeto.xaml.cs">
-      <DependentUpon>AddObjeto.xaml</DependentUpon>
+    <Compile Include="Pages\AddObj.xaml.cs">
+      <DependentUpon>AddObj.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\Home.xaml.cs">
       <DependentUpon>Home.xaml</DependentUpon>
@@ -96,6 +96,9 @@
     </Compile>
     <Compile Include="Pages\Mapa.xaml.cs">
       <DependentUpon>Mapa.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\SearchObj.xaml.cs">
+      <DependentUpon>SearchObj.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -108,7 +111,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Pages\AddObjeto.xaml">
+    <Page Include="Pages\AddObj.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -121,6 +124,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Pages\Mapa.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\SearchObj.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
