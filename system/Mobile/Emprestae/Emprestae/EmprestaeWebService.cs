@@ -12,6 +12,9 @@ using INdT.Services;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Emprestae.Models;
+using System.Security.Cryptography;
+using System.Windows.Media.Imaging;
+
 
 namespace Emprestae
 {
@@ -115,8 +118,6 @@ namespace Emprestae
                         success(response);
                     }
                 });
-
-
         }
 
         /// <summary>
@@ -236,7 +237,7 @@ namespace Emprestae
         /// <param name="error">Callback de erro</param>
         /// <author>Renato Vieira</author>
         /// <email>vieirarenato.rpv@gmail.com</email>
-        public void CreateUser(Dictionary<string, object> userData, Action<UserInfo> success, Action error)
+        public void CreateUser(Dictionary<string, object> userData, Action<Response> success, Action error)
         {
             if (this.userInfo == null)
             {
@@ -254,7 +255,7 @@ namespace Emprestae
                 {"image","oioioi"}
             };
 
-            post<UserInfo>(host+"/createUser", arg, success, error);
+            post<Response>(host+"/createUser", arg, success, error);
         }
 
         /// <summary>
@@ -265,7 +266,7 @@ namespace Emprestae
         /// <param name="error">Callback de erro</param>
         /// <author>Renato Vieira</author>
         /// <email>vieirarenato.rpv@gmail.com</email>
-        public void CheckUser(Dictionary<string, object> userData, Action<UserInfo> success, Action error)
+        public void CheckUser(Dictionary<string, object> userData, Action<Response> success, Action error)
         {
             if (this.userInfo == null)
             {
@@ -280,13 +281,7 @@ namespace Emprestae
                 {"senha",userData["pwd"]}
             };
 
-            post<UserInfo>(host + "/checkUser", arg,
-                (result) =>
-                {
-                    if (result.user != null)
-                        userInfo = result.user;
-                    success(result);
-                }, error);
+            post<Response>(host + "/checkUser", arg, success, error);
         }
 
         /// <summary>
@@ -294,6 +289,8 @@ namespace Emprestae
         /// </summary>
         /// <param name="success">Callback de sucesso</param>
         /// <param name="error">Callback de erro</param>
+        /// <author>Renato Vieira</author>
+        /// <email>vieirarenato.rpv@gmail.com</email>
         public void GetAllUsersButMe(Action<UserResponse> success, Action error)
         {
             Dictionary<string, object> arg = new Dictionary<string, object>()
@@ -311,6 +308,8 @@ namespace Emprestae
         /// <param name="email">Email do usuário</param>
         /// <param name="success">Callback de sucesso</param>
         /// <param name="error">Callback de erro</param>
+        /// <author>Renato Vieira</author>
+        /// <email>vieirarenato.rpv@gmail.com</email>
         public void GetAllUserByEmail(string email, Action<UserResponse> success, Action error)
         {
             Dictionary<string, object> arg = new Dictionary<string, object>()
@@ -323,21 +322,62 @@ namespace Emprestae
 
         #endregion
 
+        #region Métodos de Amizade
+
+        /// <summary>
+        /// Recupera os amigos do usuário
+        /// </summary>
+        /// <param name="success">Callback de sucesso</param>
+        /// <param name="error">Callback de erro</param>
+        /// <author>Renato Vieira</author>
+        /// <email>vieirarenato.rpv@gmail.com</email>
+        public void GetFriends(Action<UserResponse> success, Action error)
+        {
+            Dictionary<string, object> arg = new Dictionary<string, object>()
+            {
+                {"metodo","getFriends"},
+                {"userID", this.userInfo.idusuario},
+            };
+
+        }
+
+        #endregion
+
         #region Métodos de Objetos
 
+        /// <summary>
+        /// Recupera os objetos do usuário
+        /// </summary>
+        /// <param name="success">Callback de sucesso</param>
+        /// <param name="error">Callback de erro</param>
+        /// <author>Renato Vieira</author>
+        /// <email>vieirarenato.rpv@gmail.com</email>
         public void GetUserObjs(Action<ObjResponse> success, Action error)
         {
             Dictionary<string, object> arg = new Dictionary<string, object>()
             {
-                {"metodo","getAllUsersByEmail"},
+                {"metodo","getUserObjs"},
                 {"userID", this.userInfo.idusuario},
             };
-            get<ObjResponse>(host, arg, success, error);
+            get<ObjResponse>(host + "", arg, success, error);
         }
 
         #endregion
 
         #region Métodos de Livros
+
+        /// <summary>
+        /// Cria um objeto livro
+        /// </summary>
+        /// <param name="args"></param>
+        /// <param name="success">Callback de sucesso</param>
+        /// <param name="error">Callback de erro</param>
+        /// <author>Renato Vieira</author>
+        /// <email>vieirarenato.rpv@gmail.com</email>
+        public void CreateObjeto(Dictionary<string, object> args, Action<Response> success, Action error)
+        {            
+            post<Response>(host + "/createBook", args, success, error);
+        }
 
         #endregion
 

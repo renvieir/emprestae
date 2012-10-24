@@ -44,7 +44,7 @@ namespace Emprestae
             }
         }
 
-        private void success(UserInfo response)
+        private void success(Response response)
         {
             Dispatcher.BeginInvoke(() =>
             {

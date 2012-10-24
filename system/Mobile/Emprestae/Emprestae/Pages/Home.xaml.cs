@@ -36,8 +36,8 @@ namespace Emprestae.Pages
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
+            waitingView.Visibility = Visibility.Visible;
             emprestae.GetUserInfo(success, error);
-            emprestae.GetAllUsersButMe(success, error);
 
             // remove all pages before it
             while (NavigationService.BackStack.Count() > 0)
@@ -45,13 +45,27 @@ namespace Emprestae.Pages
             
         }
 
+        void successObj(ObjResponse response)
+        {
+            Dispatcher.BeginInvoke(() => {
+                waitingView.Visibility = Visibility.Collapsed;
+                if (response.status != 0)
+                {
+                    livrosListBox.ItemsSource = response.livros;
+                    filmesListBox.ItemsSource = response.filmes;
+                    jogosListBox.ItemsSource = response.jogos;
+                }
+            });
+        }
+
         void success(UserResponse response)
         {
             Dispatcher.BeginInvoke(() => {
+                waitingView.Visibility = Visibility.Collapsed;
                 if (response.status != 0)
                 {
+                    emprestae.GetUserObjs(successObj, error);
                     userPanel.DataContext = response.users[0];
-                    amigosListBox.ItemsSource = response.users;
                 }
             });
         }
@@ -106,7 +120,7 @@ namespace Emprestae.Pages
 
         private void AddObjButton_OnClick(object sender, EventArgs e)
         {
-            NavigationService.Navigate(new Uri("/Pages/AddObjeto.xaml", UriKind.Relative));
+            NavigationService.Navigate(new Uri("/Pages/SearchObj.xaml", UriKind.Relative));
         }
 
         #endregion

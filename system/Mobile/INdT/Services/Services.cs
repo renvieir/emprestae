@@ -145,7 +145,7 @@ namespace INdT.Services
                         break;
                 }
             }
-            catch
+            catch(Exception e)
             {
                 callRequestHandler(requestState, null, true);
             }
@@ -234,7 +234,7 @@ namespace INdT.Services
                         failed = true;
                     }
                 }
-                catch
+                catch(Exception e)
                 {
                     failed = true;
                 }

@@ -16,7 +16,7 @@ namespace Emprestae.Models
     public class ObjResponse
     {
         [DataMember]
-        public string status { get; set; }
+        public int status { get; set; }
 
         [DataMember]
         public LivroArray[] livros { get; set; }
