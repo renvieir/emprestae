@@ -2,15 +2,18 @@
 
 $app->post("/requestEmp", "solicitaEmprestimo");
 $app->put("/acceptEmp", "aceitaEmprestar");
+
 $app->get("/getEmpPorMim/:id1", "getEmpPorMim");
 $app->get("/getEmpDeMim/:id1", "getEmpDeMim");
+$app->get("/getEmpRequestDeMim/:id1", "getEmpRequestDeMim");
+
 $app->delete("/removeEmp", "removeEmprestimo");
 
 $app->put("/updateEmpDate", "updateEmprestimo");
 $app->put("/changeEmpStatus", "changeEmprestimoStatus");
 
 
-/* date format: yyyy/mm/dd */
+/* date format: yyyy/mm/dd; id1 emprestou de id2 */
 function solicitaEmprestimo(){
 
 	global $loanTable, $patrimonio;
@@ -100,7 +103,7 @@ function getEmpPorMim($id) {
 
 	$response["status"] = 1;
 	$dbh = getConnection();
-	$sql = "select * from $loanTable where fk_idUser2 = :id";
+	$sql = "select * from $loanTable where fk_idUser1 = :id and status != 0";
 	$stmt = $dbh->prepare($sql);
 	$stmt->bindParam(":id", $id);
 	$stmt->execute();
@@ -123,7 +126,29 @@ function getEmpDeMim($id) {
 
 	$response["status"] = 1;
 	$dbh = getConnection();
-	$sql = "select * from $loanTable where fk_idUser1 = :id";
+	$sql = "select * from $loanTable where fk_idUser2 = :id and status != 0";
+	$stmt = $dbh->prepare($sql);
+	$stmt->bindParam(":id", $id);
+	$stmt->execute();
+
+	/* get laon information as a associative array */
+	$tmp = $stmt->fetchAll(PDO::FETCH_CLASS);
+	$response["emprestimos"] = storeElements("emprestimo", $tmp);
+	if ($response["emprestimos"])
+		$response["status"] = 1;
+
+	closeConnection($dbh);
+	echo json_encode($response);
+	return;
+}
+
+function getEmpRequestDeMim($id) {
+
+	global $loanTable;
+
+	$response["status"] = 1;
+	$dbh = getConnection();
+	$sql = "select * from $loanTable where fk_idUser2 = :id and status = 0";
 	$stmt = $dbh->prepare($sql);
 	$stmt->bindParam(":id", $id);
 	$stmt->execute();

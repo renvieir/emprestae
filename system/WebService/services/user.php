@@ -257,28 +257,26 @@ function getCloseUsers($id1, $userLat, $userLong) {
 		$arr = Array();
 		$i = 0;
 		$coordUser = coordenadasEsfericas($userLat, $userLong);
-		echo "ok2\n";
 		foreach ($elements as $elem) {
 			$arr[$i] = Array();
 			$arr[$i][$type] = Array();
-			foreach ($elements[$i] as $key => $value) {
-				if ($key == "addressLat") {
-					$friendLat = $elements[$i]["addressLat"];
-					$friendLong = $elements[$i]["addressLong"];
-					$coordFriend=coordenadasEsfericas($friendLat, $friendLong);
+			
+			/* verifica proximidade */
+			$friendLat = $elements[$i]["addressLat"];
+			$friendLong = $elements[$i]["addressLong"];
+			$coordFriend=coordenadasEsfericas($friendLat, $friendLong);
 
-					if( !distBetweenUsers($coordUser, $coordFriend) ) {
-						$arr[$i][$type]	= null;
-						unset($arr[$i]);
-						break;
-					}
-				}
+			if( !distBetweenUsers($coordUser, $coordFriend) )
+				continue;
+
+			echo $elements[$i]['idusuario'];
+			foreach ($elements[$i] as $key => $value)
 				$arr[$i][$type][$key] = ($value) ? $value: null;
-			}
 			$i++;
 		}
 	}
 
+	if ($i == 0) $arr = null;
 	$response["users"] = $arr;
 	if ($response["users"])
 		$response["status"] = 1;
