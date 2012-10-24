@@ -31,7 +31,7 @@ function checkImageType ($image_binary) {
 
 function createImage($elem, $image64, $isUser) {
 
-	$path = "http://localhost/sd/emprestei/system/WebService/";
+	$path = "www.services.emprestae.com";
 	$localPath = "services/images/";
 	$localPath .= ($isUser) ? "users/" : "objects/";
 

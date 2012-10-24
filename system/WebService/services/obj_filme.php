@@ -4,6 +4,7 @@ $app->post("/createFilm", "createObjFilm");
 $app->put("/updateFilm", "updateObjFilm");
 $app->get("/getFilmInfo/:id", "getObjFilmInfo");
 $app->get("/getAllFilms", "getAllObjFilms");
+$app->get("/getSimilarFilms/:titulo", "getSimilarObjFilms");
 $app->delete("/removeFilm", "removeObjFilm");
 
 function createObjFilm() {
@@ -22,7 +23,8 @@ function createObjFilm() {
 	/* lendo dados do json */
 	$title = $json->titulo; $director = $json->diretor;
 	$house = $json->distribuidora;
-	$imPath = createImage($title, $json->image, false);
+	//$imPath = createImage($title, $json->image, false);
+	$imPath = null;
 
 	$response["status"] = 1;
 	$dbh = getConnection();
@@ -61,7 +63,8 @@ function updateObjFilm() {
 	/* lendo dados do json */
 	$title = $json->titulo; $director = $json->diretor;
 	$house = $json->distribuidora; $id = $json->idFilme;
-	$imPath = createImage($title, $json->image, false);
+	//$imPath = createImage($title, $json->image, false);
+	$imPath = null;
 
 	$response["status"] = 1;
 	$dbh = getConnection();
@@ -90,6 +93,28 @@ function getAllObjFilms() {
 	$dbh = getConnection();
 
 	$sql = "select * from $filmTable";
+	$stmt = $dbh->prepare($sql);
+	$stmt->execute();
+
+	/* get user information as a associative array */
+	$tmp = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	$response["filmes"] = storeElements("filme", $tmp);
+	if ($response["filmes"])
+		$response["status"] = 1;
+
+	closeConnection($dbh);
+	echo json_encode($response);
+	return;
+}
+
+function getSimilarObjFilms($titulo) {
+
+	global $filmTable;
+
+	$response["status"] = 0;
+	$dbh = getConnection();
+
+	$sql = "select * from $filmTable where titulo like '%$titulo%' ";
 	$stmt = $dbh->prepare($sql);
 	$stmt->execute();
 

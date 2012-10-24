@@ -8,7 +8,7 @@ $app->delete("/removeUser", "removeUser");
 $app->post("/checkUser", "checkUser");
 $app->get("/getUserInfo/:email", "getUserInfo");
 $app->get("/getAllUsersBut/:email", "getAllUsersBut");
-$app->get("/getAllUsersByEmail/:email", "getAllUsersByEmail");
+$app->get("/getAllUsersByName/:nome", "getAllUsersByName");
 $app->get("/getCloseUsers/:userId/:lat/:long", "getCloseUsers");
 
 function createUser() {
@@ -29,12 +29,13 @@ function createUser() {
 	$name = $json->nome; $email = $json->email; $pwd = $json->senha;
 	$lat = $json->addressLat; $long = $json->addressLong;
 
-//	$imPath = createImage($email, $json->image, true);
+	//$imPath = createImage($email, $json->image, true);
+	$imPath = null;
 
 	$response["status"] = 1;
 	$dbh = getConnection();
 	$sql = "insert into $userTable (email, nome, senha, addressLat, addressLong,
-				imagePath) values (:email, :name, :pwd, :lat, :long, null)";
+				imagePath) values (:email, :name, :pwd, :lat, :long, :imPath)";
 
 	try {
 		$stmt = $dbh->prepare($sql);
@@ -43,8 +44,7 @@ function createUser() {
 		$stmt->bindParam(":pwd", $pwd);
 		$stmt->bindParam(":lat", $lat);
 		$stmt->bindParam(":long", $long);
-
-//		$stmt->bindParam(":imPath", $imPath);
+		$stmt->bindParam(":imPath", $imPath);
 
 		$stmt->execute();
 	} catch (PDOException $e) {
@@ -73,13 +73,16 @@ function updateUser() {
 	/* lendo dados do json */
 	$name = $json->nome; $email = $json->email; $pwd = $json->senha;
 	$lat = $json->addressLat; $long = $json->addressLong;
-	$imPath = createImage($email, $json->imagePath, true);
+	$idUSer = $json->idusuario;
+	
+	//$imPath = createImage($email, $json->imagePath, true);
+	$imPath = null;
 
 	$response["status"] = 1;
 	$dbh = getConnection();
 	$sql = "update $userTable set email = :email, nome = :name, senha = :pwd,
 				addressLat = :lat, addressLong = :long, imagePath = :imPath
-					where email = :email";
+					where idusuario = :idUser";
 
 	$stmt = $dbh->prepare($sql);
 	$stmt->bindParam(":email", $email);
@@ -88,6 +91,7 @@ function updateUser() {
 	$stmt->bindParam(":lat", $lat);
 	$stmt->bindParam(":long", $long);
 	$stmt->bindParam(":imPath", $imPath);
+	$stmt->bindParam(":idUser", $idUser);
 	$stmt->execute();
 
 	closeConnection($dbh);
@@ -207,15 +211,14 @@ function getAllUsersBut($mail) {
 	return;
 }
 
-function getAllUsersByEmail($mail) {
+function getAllUsersByName($name) {
 
 	global $userTable;
 
 	$response["status"] = 0;
-	$email = $mail;
 	$dbh = getConnection();
 	$sql = "select idusuario, nome, email, addressLat, addressLong, imagePath
-										from $userTable where email like '%$mail%'";
+										from $userTable where nome like '%$name%'";
 	$stmt = $dbh->prepare($sql);
 	$stmt->execute();
 
