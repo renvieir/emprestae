@@ -1,0 +1,23 @@
+funcionalidades do app Emprestae:
+    + criar usuario
+    + fazer login
+    + editar minhas informações
+    + recuperar minhas informações
+    + buscar pessoas
+    - solicitar amizade
+    - confirmar amizade
+    + recuperar amigos
+    - buscar objeto:
+        + livro
+        - filme
+        - jogo
+    - adicionar objeto:
+        - livro
+        - filme
+        - jogo
+    + recuperar meus objetos
+    - solicitar empréstimo
+    - confirmar empréstimo
+    - atualizar empréstimo
+    + ver pessoas proximas no mapa
+    
