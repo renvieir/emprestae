@@ -22,6 +22,7 @@ namespace Emprestae.Pages
 
         bool isFriend = false;
         UserArray friendInfo;
+        string friendEmail;
         string requestStatus;
 
         public ViewUser()
@@ -55,25 +56,55 @@ namespace Emprestae.Pages
             base.OnNavigatedTo(e);
             loadingLayer.Visibility = Visibility.Visible;
             
-            string friendEmail = NavigationContext.QueryString["friendEmail"];
-            friendInfo = emprestae.userFriends.First(x => x.user.email == friendEmail);
+            friendEmail = NavigationContext.QueryString["friendEmail"];
+
+            TryGetFriendInfo(emprestae.userFriends);
 
             if (friendInfo != null)
             {
                 userPanel.DataContext = friendInfo;
                 isFriend = true;
                 emprestae.GetUserObjs(friendInfo.user.idusuario, successObjs, error);
+                emprestae.GetFriendsRequest(emprestae.userInfo.idusuario.ToString(), successReq, error);
             }
             else
             {
                 isFriend = false;
                 emprestae.GetUserInfo(friendEmail, successUser, error);
-                requestStatus = NavigationContext.QueryString["requestStatus"];
+//                requestStatus = NavigationContext.QueryString["requestStatus"];
             }
 
         }
 
+        private void TryGetFriendInfo(UserArray[] friendArray)
+        {
+            try
+            {
+                friendInfo = friendArray.First(x => x.user.email == friendEmail);
+            }
+            catch (Exception ex)
+            {
+            }
+        }
+
         #region Callbacks
+
+        void successReq(UserResponse response) 
+        {
+            Dispatcher.BeginInvoke(() => 
+            {
+                TryGetFriendInfo(response.users);
+                if (friendInfo == null)
+                {
+                    requestStatus = "none";
+                }
+                else
+                {
+                    requestStatus = "received";
+                }
+                ConstructAppBar();
+            });
+        }
 
         void successUser(UserResponse response)
         {
@@ -86,6 +117,7 @@ namespace Emprestae.Pages
                     userPanel.DataContext = friendInfo;
                     loadingLayer.Visibility = Visibility.Visible;
                     emprestae.GetUserObjs(response.users[0].user.idusuario, successObjs, error);
+                    emprestae.GetFriendsRequest(emprestae.userInfo.idusuario.ToString(), successReq, error);
                 }
             });
         }
@@ -107,8 +139,11 @@ namespace Emprestae.Pages
 
         void success(Response response)
         {
-            MessageBox.Show("Operação realizada");
-            NavigationService.Navigate(new Uri("/Pages/Home.xaml", UriKind.Relative));
+            Dispatcher.BeginInvoke(() => 
+            {
+                MessageBox.Show("Operação realizada");
+                NavigationService.Navigate(new Uri("/Pages/Home.xaml", UriKind.Relative));
+            });
         }
 
         void error()
@@ -133,6 +168,8 @@ namespace Emprestae.Pages
                 switch (requestStatus)
                 {
                     case "none":
+                        ApplicationBar.Buttons.Remove(acceptFriendButton);
+                        ApplicationBar.Buttons.Remove(unFriendButton);
                         try
                         {
                             ApplicationBar.Buttons.Add(requestFriendButton);
@@ -140,6 +177,8 @@ namespace Emprestae.Pages
                         catch { }                    
                         break;
                     case "received":
+                        ApplicationBar.Buttons.Remove(unFriendButton);
+                        ApplicationBar.Buttons.Remove(requestFriendButton);
                         try
                         {
                             ApplicationBar.Buttons.Add(acceptFriendButton);
@@ -148,8 +187,8 @@ namespace Emprestae.Pages
                         break;
                     default:
                         ApplicationBar.Buttons.Remove(acceptFriendButton);
-                        ApplicationBar.Buttons.Remove(requestStatus);
                         ApplicationBar.Buttons.Remove(unFriendButton);
+                        ApplicationBar.Buttons.Remove(requestFriendButton);
                         break;
                 }
             }

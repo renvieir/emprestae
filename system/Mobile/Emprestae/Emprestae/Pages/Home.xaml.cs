@@ -117,9 +117,10 @@ namespace Emprestae.Pages
                 waitingView.Visibility = Visibility.Collapsed;
                 if (response.status != 0)
                 {
+                    emprestae.userInfo = response.users[0].user;
+                    userPanel.DataContext = response.users[0];
                     emprestae.GetUserObjs(emprestae.userInfo.idusuario, successObj, error);
                     emprestae.GetFriends(successFriends, error);
-                    userPanel.DataContext = response.users[0];
                 }
             });
         }

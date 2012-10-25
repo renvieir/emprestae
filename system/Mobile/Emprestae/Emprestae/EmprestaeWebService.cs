@@ -30,7 +30,8 @@ namespace Emprestae
 
         #region User Info
 
-        public User userInfo { get; set; }
+        public User userInfo { get; 
+            set; }
 
         public UserArray[] userFriends { get; set; }
 
@@ -237,11 +238,7 @@ namespace Emprestae
         {
             get<UserResponse>(
                 host, 
-                (result) => 
-                {
-                    userInfo = result.users[0].user;
-                    success(result);
-                },
+                success,
                 error,
                 new Dictionary<string, object>()
                 {
@@ -271,7 +268,7 @@ namespace Emprestae
                 {
                     {"nome",userData["nome"]},
                     {"email",userData["email"]},
-                    {"senha",userData["pwd"]},
+                    {"senha",userData["senha"]},
                     {"addressLat",""},
                     {"addressLong",""}
                 },
@@ -450,6 +447,19 @@ namespace Emprestae
                 error);
         }
 
+        public void GetFriendsRequest(string id, Action<UserResponse> success, Action error)
+        {
+            get<UserResponse>(
+                host,
+                success,
+                error,
+                new Dictionary<string, object>()
+                { 
+                    {"metodo", "getFriendsRequest"},
+                    {"friendId", id}
+                });
+        }
+        
         /// <summary>
         /// Aceita a solicitação de amizade do usuário especificado pelo id
         /// </summary>
