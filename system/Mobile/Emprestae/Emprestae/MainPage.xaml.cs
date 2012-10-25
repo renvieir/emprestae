@@ -12,12 +12,14 @@ using System.Windows.Shapes;
 using Microsoft.Phone.Controls;
 using Emprestae.Models;
 using System.Diagnostics;
+using System.Windows.Navigation;
 
 namespace Emprestae
 {
     public partial class MainPage : PhoneApplicationPage
     {
         EmprestaeWebService emprestae;
+
         // Constructor
         public MainPage()
         {
@@ -25,6 +27,12 @@ namespace Emprestae
             emprestae = (Application.Current as App).emprestae;
         }
 
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+
+            //NavigationService.Navigate(new Uri("/Pages/Teste.xaml",UriKind.Relative));
+        }
         private void ApplicationBarOkButton_Click(object sender, EventArgs e)
         {
             Dictionary<string, object> arg = new Dictionary<string, object>();
@@ -32,14 +40,14 @@ namespace Emprestae
             if (pivot.SelectedIndex == 0)
             {
                 arg.Add("email", email.Text);
-                arg.Add("pwd", senha.Text);
+                arg.Add("senha", senha.Text);
                 emprestae.CheckUser(arg,success, error);
             }
             else
             {
                 arg.Add("nome", nome.Text);
                 arg.Add("email", newEmail.Text);
-                arg.Add("pwd", newSenha.Text);
+                arg.Add("senha", newSenha.Text);
                 emprestae.CreateUser(arg,success, error);
             }
         }
@@ -60,8 +68,6 @@ namespace Emprestae
                 }
             });
         }
-
-
 
         private void error()
         {

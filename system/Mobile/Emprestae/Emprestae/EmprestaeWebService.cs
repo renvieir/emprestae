@@ -24,7 +24,7 @@ namespace Emprestae
 
         #region Variáveis Estáticas
 
-        private static string host = "http://service.emprestae.com";
+        private static string host = "http://services.emprestae.com";
 
         #endregion
 
@@ -32,12 +32,20 @@ namespace Emprestae
 
         public User userInfo { get; set; }
 
+        public UserArray[] userFriends { get; set; }
+
+        public string password { get; set; }
+
         #endregion
 
         #endregion
 
         #region Métodos
 
+        /// <summary>
+        /// Converte as informações do usuário para um dicionário
+        /// </summary>
+        /// <returns>Dicionario de {string, ojeto}</returns>
         private Dictionary<string, object> ConvertUserToDictionary()
         {
             return new Dictionary<string, object>()
@@ -225,7 +233,7 @@ namespace Emprestae
         /// <param name="error">Callback de erro</param>
         /// <author>Renato Vieira</author>
         /// <email>vieirarenato.rpv@gmail.com</email>
-        public void GetUserInfo(Action<UserResponse> success, Action error)
+        public void GetUserInfo(string email, Action<UserResponse> success, Action error)
         {
             get<UserResponse>(
                 host, 
@@ -238,7 +246,7 @@ namespace Emprestae
                 new Dictionary<string, object>()
                 {
                     {"metodo","getUserInfo"},
-                    {"email",this.userInfo.email}
+                    {"email",email}
                 });
  
         }
@@ -254,28 +262,38 @@ namespace Emprestae
         public void CreateUser(Dictionary<string, object> userData, Action<Response> success, Action error)
         {
             if (this.userInfo == null)
-            {
-                this.userInfo = new User();
-            }
-            this.userInfo.email = userData["email"].ToString();
+                userInfo = new User() { email = userData["email"].ToString() };
+            password = userData["senha"].ToString();
 
-            Dictionary<string, object> arg = new Dictionary<string, object>()
-            {
-                {"nome",userData["nome"]},
-                {"email",userData["email"]},
-                {"senha",userData["pwd"]},
-                {"addressLat",123},
-                {"addressLong",123},
-                {"image","oioioi"}
-            };
-
-            post<Response>(host+"/createUser", arg, success, error);
+            post<Response>(
+                host+"/createUser",
+                new Dictionary<string, object>()
+                {
+                    {"nome",userData["nome"]},
+                    {"email",userData["email"]},
+                    {"senha",userData["pwd"]},
+                    {"addressLat",""},
+                    {"addressLong",""}
+                },
+                success,
+                error);
         }
 
-        public void UpdateUser(Action<Response> success, Action error)
+        /// <summary>
+        /// Atualiza as informações do usuário com as informações do celular
+        /// </summary>
+        /// <param name="success">Callback de sucesso</param>
+        /// <param name="error">Callback de erro</param>
+        /// <author>Renato Vieira</author>
+        /// <email>vieirarenato.rpv@gmail.com</email>
+        public void UpdateUser(string senha, Action<Response> success, Action error)
         {
-            put<Response>(host + "/updateUser",
-                ConvertUserToDictionary(),
+            Dictionary<string, object> arg = ConvertUserToDictionary();
+            arg.Add("senha",senha);
+
+            put<Response>(
+                host + "/updateUser",
+                arg,
                 success,
                 error);
         }
@@ -291,21 +309,16 @@ namespace Emprestae
         public void CheckUser(Dictionary<string, object> userData, Action<Response> success, Action error)
         {
             if (this.userInfo == null)
-            {
-                this.userInfo = new User();
-            }
-
-            this.userInfo.email = userData["email"].ToString();
-
-            Dictionary<string, object> arg = new Dictionary<string, object>()
-            {
-                {"email",userData["email"]},
-                {"senha",userData["pwd"]}
-            };
+                userInfo = new User() { email = userData["email"].ToString() };
+            password = userData["senha"].ToString();
 
             post<Response>(
                 host + "/checkUser",
-                arg,
+                new Dictionary<string, object>()
+                {
+                    {"email",userData["email"]},
+                    {"senha",userData["senha"]}
+                },
                 success,
                 error);
         }
@@ -331,14 +344,14 @@ namespace Emprestae
         }
 
         /// <summary>
-        /// Busca usuários por email
+        /// Busca usuários por nome
         /// </summary>
-        /// <param name="email">Email do usuário</param>
+        /// <param name="name">Nome do usuário</param>
         /// <param name="success">Callback de sucesso</param>
         /// <param name="error">Callback de erro</param>
         /// <author>Renato Vieira</author>
         /// <email>vieirarenato.rpv@gmail.com</email>
-        public void GetAllUserByEmail(string email, Action<UserResponse> success, Action error)
+        public void GetAllUserByName(string name, Action<UserResponse> success, Action error)
         {
             get<UserResponse>(
                 host,
@@ -346,8 +359,8 @@ namespace Emprestae
                 error,
                 new Dictionary<string, object>()
                 {
-                    {"metodo","getAllUsersByEmail"},
-                    {"email", email},
+                    {"metodo","getAllUsersByName"},
+                    {"email", name},
                 });
         }
 
@@ -360,7 +373,7 @@ namespace Emprestae
         /// <param name="error">Callback de erro</param>
         /// <author>Renato Vieira</author>
         /// <email>vieirarenato.rpv@gmail.com</email>
-        public void GetCloseUsers(string userLat, string userLong, Action<UserResponse> success, Action error)
+        public void GetCloseUsers(Action<UserResponse> success, Action error)
         {
             get<UserResponse>(
                 host,
@@ -369,10 +382,28 @@ namespace Emprestae
                 new Dictionary<string, object>()
                 {
                     {"metodo","getCloseUsers"},
-                    {"userLat", userLat},
-                    {"userLong", userLong}
+                    {"userId", this.userInfo.idusuario},
+                    {"userLat", this.userInfo.addressLat},
+                    {"userLong", this.userInfo.addressLong}
                 });
 
+        }
+
+        /// <summary>
+        /// Remove o usuario do sistema
+        /// </summary>
+        /// <param name="email">Email do usuario</param>
+        /// <param name="success">Callback de sucesso</param>
+        /// <param name="error">Callback de erro</param>
+        /// <author>Renato Vieira</author>
+        /// <email>vieirarenato.rpv@gmail.com</email>
+        public void RemoveUser(string email, Action<Response> success, Action error)
+        {
+            delete<Response>(
+                host + "/removeUser",
+                new Dictionary<string, object>() { { "email", email } },
+                success,
+                error);
         }
 
         #endregion
@@ -399,6 +430,66 @@ namespace Emprestae
                 });
         }
 
+        /// <summary>
+        /// Envia uma solicitação de amizade ao usuário especificado pelo id
+        /// </summary>
+        /// <param name="friendId">Id do amigo</param>
+        /// <param name="success">Callback de sucesso</param>
+        /// <param name="error">Callback de erro</param>
+        /// <author>Renato Vieira</author>
+        /// <email>vieirarenato.rpv@gmail.com</email>
+        public void RequestFriend(string friendId, Action<Response> success, Action error)
+        {
+            post<Response>(
+                host + "/requestFriend",
+                new Dictionary<string, object> { 
+                    {"id1", this.userInfo.idusuario},
+                    {"id2", friendId}
+                },
+                success,
+                error);
+        }
+
+        /// <summary>
+        /// Aceita a solicitação de amizade do usuário especificado pelo id
+        /// </summary>
+        /// <param name="friendId">Id do amigo</param>
+        /// <param name="success">Callback de sucesso</param>
+        /// <param name="error">Callback de erro</param>
+        /// <author>Renato Vieira</author>
+        /// <email>vieirarenato.rpv@gmail.com</email>
+        public void AcceptFriend(string friendId, Action<Response> success, Action error)
+        {
+            put<Response>(
+                host + "/acceptFriend",
+                new Dictionary<string, object> { 
+                    {"id1", this.userInfo.idusuario},
+                    {"id2", friendId}
+                },
+                success,
+                error);
+        }
+
+        /// <summary>
+        /// Desfaz amizade com o amigo especificado pelo id
+        /// </summary>
+        /// <param name="friendId">Id do amigo</param>
+        /// <param name="success">Callback de sucesso</param>
+        /// <param name="error">Callback de erro</param>
+        /// <author>Renato Vieira</author>
+        /// <email>vieirarenato.rpv@gmail.com</email>
+        public void UnFriend(string friendId, Action<Response> success, Action error)
+        {
+            delete<Response>(
+                host + "/acceptFriend",
+                new Dictionary<string, object> { 
+                    {"id1", this.userInfo.idusuario},
+                    {"id2", friendId}
+                },
+                success,
+                error);
+        }
+        
         #endregion
 
         #region Métodos de Objetos
@@ -412,7 +503,7 @@ namespace Emprestae
         /// <param name="error">Callback de erro</param>
         /// <author>Renato Vieira</author>
         /// <email>vieirarenato.rpv@gmail.com</email>
-        public void GetUserObjs(Action<ObjResponse> success, Action error)
+        public void GetUserObjs(int userId, Action<ObjResponse> success, Action error)
         {
             get<ObjResponse>(
                 host,
@@ -421,15 +512,48 @@ namespace Emprestae
                 new Dictionary<string, object>()
                 {
                     {"metodo","getUserObjs"},
-                    {"userID", this.userInfo.idusuario},
+                    {"userID", userId},
                 });
         }
 
+        /// <summary>
+        /// Adciona objetos ao patrimonio do usuario
+        /// </summary>
+        /// <param name="objData">Dados do Objeto</param>
+        /// <param name="success">Callback de sucesso</param>
+        /// <param name="error">Callback de erro</param>
+        /// <author>Renato Vieira</author>
+        /// <email>vieirarenato.rpv@gmail.com</email>
         public void AddUserObj(Dictionary<string, object> objData, Action<Response> success, Action error)
         {
+            objData.Add("userId", this.userInfo.idusuario);
             post<Response>(
                 host + "/addUserObj",
                 objData,
+                success,
+                error);
+        }
+
+        /// <summary>
+        /// Remove um objeto do patrimônio do usuário
+        /// </summary>
+        /// <param name="userId">Id do usuário</param>
+        /// <param name="objId">Id do objeto</param>
+        /// <param name="objType">Tipo do objeto</param>
+        /// <param name="success">Callback de sucesso</param>
+        /// <param name="error">Callback de erro</param>
+        /// <author>Renato Vieira</author>
+        /// <email>vieirarenato.rpv@gmail.com</email>
+        public void RemoveUserObj(string userId, string objId, string objType, Action<Response> success, Action error)
+        {
+            delete<Response>(
+                host + "/removeUserObj",
+                new Dictionary<string, object>()
+                {
+                    {"userId", userId},
+                    {"objId", objId},
+                    {"objType", objType}
+                },
                 success,
                 error);
         }
@@ -477,7 +601,7 @@ namespace Emprestae
         }
 
         /// <summary>
-        /// Recupera todos os livros do banco
+        /// Recupera todos os livros do banco de dados
         /// </summary>
         /// <param name="success">Callback de sucesso</param>
         /// <param name="error">Callback de erro</param>
@@ -491,10 +615,73 @@ namespace Emprestae
                 error);
         }
 
+        /// <summary>
+        /// Busca livros pelo titulo 
+        /// </summary>
+        /// <param name="title">Titulo do livro</param>
+        /// <param name="success">Callback de sucesso</param>
+        /// <param name="error">Callback de erro</param>
+        /// <author>Renato Vieira</author>
+        /// <email>vieirarenato.rpv@gmail.com</email>
+        public void GetSimilarBooks(string title, Action<ObjResponse> success, Action error)
+        {
+            get<ObjResponse>(
+                host,
+                success,
+                error,
+                new Dictionary<string, object>()
+                {
+                    {"metodo","getSimilarBooks"},
+                    {"titulo", title}
+                });
+        }
+
+        /// <summary>
+        /// Atualiza as informações do livro
+        /// </summary>
+        /// <param name="bookData">Dados do livro</param>
+        /// <param name="success">Callback de sucesso</param>
+        /// <param name="error">Callback de erro</param>
+        /// <author>Renato Vieira</author>
+        /// <email>vieirarenato.rpv@gmail.com</email>
+        public void UpdateBook(Dictionary<string, object> bookData, Action<Response> success, Action error)
+        {
+            put<Response>(
+                host + "/updateBook",
+                bookData,
+                success,
+                error);
+        }
+
+        /// <summary>
+        /// Remove o livro do banco de dados
+        /// </summary>
+        /// <param name="idLivro">Id do livro</param>
+        /// <param name="success">Callback de sucesso</param>
+        /// <param name="error">Callback de erro</param>
+        /// <author>Renato Vieira</author>
+        /// <email>vieirarenato.rpv@gmail.com</email>
+        public void RemoveBook(string idLivro, Action<Response> success, Action error)
+        {
+            delete<Response>(
+                host + "/removeBook",
+                new Dictionary<string, object>() { { "idLivro", idLivro } },
+                success,
+                error);
+        }
+
         #endregion
 
         #region Filmes
 
+        /// <summary>
+        /// Cria um objeto filme
+        /// </summary>
+        /// <param name="filmData">Dados do filme</param>
+        /// <param name="success">Callback de sucesso</param>
+        /// <param name="error">Callback de erro</param>
+        /// <author>Renato Vieira</author>
+        /// <email>vieirarenato.rpv@gmail.com</email>
         public void CreateFilm(Dictionary<string, object> filmData, Action<Response> success, Action error)
         {
             post<Response>(
@@ -503,11 +690,110 @@ namespace Emprestae
                 success,
                 error);
         }
-        
+
+        /// <summary>
+        /// Recupera informações de um livro especificado pelo seu Id
+        /// </summary>
+        /// <param name="filmId">Id do filme</param>
+        /// <param name="success">Callback de sucesso</param>
+        /// <param name="error">Callback de erro</param>
+        /// <author>Renato Vieira</author>
+        /// <email>vieirarenato.rpv@gmail.com</email>
+        public void GetFilmInfo(string filmId, Action<ObjResponse> success, Action error)
+        {
+            get<ObjResponse>(
+                host,
+                success,
+                error,
+                new Dictionary<string, object>() 
+                {
+                    {"metodo","getFilmInfo"},
+                    {"filmId", filmId}
+                });
+        }
+
+        /// <summary>
+        /// Busca todos os filmes do banco de dados
+        /// </summary>
+        /// <param name="success">Callback de sucesso</param>
+        /// <param name="error">Callback de erro</param>
+        /// <author>Renato Vieira</author>
+        /// <email>vieirarenato.rpv@gmail.com</email>
+        public void GetAllFilms(Action<ObjResponse> success, Action error)
+        {
+            get<ObjResponse>(
+                host + "/getAllFilms",
+                success,
+                error);
+        }
+
+        /// <summary>
+        /// Busca filmes pelo titulo 
+        /// </summary>
+        /// <param name="title">Titulo do filme</param>
+        /// <param name="success">Callback de sucesso</param>
+        /// <param name="error">Callback de erro</param>
+        /// <author>Renato Vieira</author>
+        /// <email>vieirarenato.rpv@gmail.com</email>
+        public void GetSimilarFilms(string title, Action<ObjResponse> success, Action error)
+        {
+            get<ObjResponse>(
+                host,
+                success,
+                error,
+                new Dictionary<string, object>()
+                {
+                    {"metodo","getSimilarFilms"},
+                    {"titulo", title}
+                });
+        }
+
+        /// <summary>
+        /// Atualiza as informações do filme
+        /// </summary>
+        /// <param name="filmData">Dados do filme</param>
+        /// <param name="success">Callback de sucesso</param>
+        /// <param name="error">Callback de erro</param>
+        /// <author>Renato Vieira</author>
+        /// <email>vieirarenato.rpv@gmail.com</email>
+        public void UpdateFilm(Dictionary<string, object> filmData, Action<Response> success, Action error)
+        {
+            put<Response>(
+                host + "/updateFilm",
+                filmData,
+                success,
+                error);
+        }
+
+        /// <summary>
+        /// Remove um filme do banco de dados
+        /// </summary>
+        /// <param name="filmId">Id do filme</param>
+        /// <param name="success">Callback de sucesso</param>
+        /// <param name="error">Callback de erro</param>
+        /// <author>Renato Vieira</author>
+        /// <email>vieirarenato.rpv@gmail.com</email>
+        public void RemoveFilm(string filmId, Action<Response> success, Action error)
+        {
+            delete<Response>(
+                host + "/removeFilm",
+                new Dictionary<string, object>() { { "idFilme", filmId } },
+                success,
+                error);
+        }
+
         #endregion
 
         #region Jogos
 
+        /// <summary>
+        /// Cria um objeto jogo
+        /// </summary>
+        /// <param name="gameData">Dados do Jogo</param>
+        /// <param name="success">Callback de sucesso</param>
+        /// <param name="error">Callback de erro</param>
+        /// <author>Renato Vieira</author>
+        /// <email>vieirarenato.rpv@gmail.com</email>
         public void CreateGame(Dictionary<string, object> gameData, Action<Response> success, Action error)
         {
             post<Response>(
@@ -517,7 +803,179 @@ namespace Emprestae
                 error);
         }
 
+        /// <summary>
+        /// Recupera informações de um jogo especificado pelo seu Id
+        /// </summary>
+        /// <param name="gameId">Id do jogo</param>
+        /// <param name="success">Callback de sucesso</param>
+        /// <param name="error">Callback de erro</param>
+        /// <author>Renato Vieira</author>
+        /// <email>vieirarenato.rpv@gmail.com</email>
+        public void GetGameInfo(string gameId, Action<ObjResponse> success, Action error)
+        {
+            get<ObjResponse>(
+                host,
+                success,
+                error,
+                new Dictionary<string, object>() 
+                {
+                    {"metodo","getGameInfo"},
+                    {"gameId",gameId}
+                });
+        }
+
+        /// <summary>
+        /// Busca todos os jogos do banco de dados
+        /// </summary>
+        /// <param name="success">Callback de sucesso</param>
+        /// <param name="error">Callback de erro</param>
+        /// <author>Renato Vieira</author>
+        /// <email>vieirarenato.rpv@gmail.com</email>
+        public void GetAllGames(Action<ObjResponse> success, Action error)
+        {
+            get<ObjResponse>(
+                host + "/getAllGames",
+                success,
+                error
+                );
+        }
+
+
+        /// <summary>
+        /// Busca jogos pelo titulo 
+        /// </summary>
+        /// <param name="title">Titulo do jogo</param>
+        /// <param name="success">Callback de sucesso</param>
+        /// <param name="error">Callback de erro</param>
+        /// <author>Renato Vieira</author>
+        /// <email>vieirarenato.rpv@gmail.com</email>
+        public void GetSimilarGames(string title, Action<ObjResponse> success, Action error)
+        {
+            get<ObjResponse>(
+                host + "/getSimilarGames",
+                success,
+                error);
+        }
+
+        /// <summary>
+        /// Atualiza as informações de um jogo
+        /// </summary>
+        /// <param name="gameData">Dados do jogo</param>
+        /// <param name="success">Callback de sucesso</param>
+        /// <param name="error">Callback de erro</param>
+        /// <author>Renato Vieira</author>
+        /// <email>vieirarenato.rpv@gmail.com</email>
+        public void UpdateGame(Dictionary<string, object> gameData, Action<Response> success, Action error)
+        {
+            put<Response>(
+                host + "/updateGame",
+                gameData,
+                success,
+                error);
+        }
+
+        /// <summary>
+        /// Remove um jogo do banco de dados
+        /// </summary>
+        /// <param name="gameId">Id do jogo</param>
+        /// <param name="success">Callback de sucesso</param>
+        /// <param name="error">Callback de erro</param>
+        /// <author>Renato Vieira</author>
+        /// <email>vieirarenato.rpv@gmail.com</email>
+        public void RemoveGame(string gameId, Action<Response> success, Action error)
+        {
+            delete<Response>(
+                host + "/removeGame",
+                new Dictionary<string, object>() { { "idJogo", gameId } },
+                success,
+                error);
+        }
+
         #endregion
+
+        #endregion
+
+        #region Métodos de Empréstimo
+
+        public void RequestEmp(Dictionary<string,object> arg, Action<Response> success, Action error)
+        {
+            post<Response>(
+                host + "/requestEmp",
+                arg,
+                success,
+                error);
+        }
+
+        public void AcceptEmp(string idEmp, Action<Response> success, Action error)
+        {
+            put<Response>(
+                host + "/acceptEmp",
+                new Dictionary<string, object>()
+                { {"idemprestimo", idEmp} },
+                success, 
+                error);
+        }
+
+        public void GetEmpIMade(Action<EmpReponse> success, Action error)
+        {
+            get<EmpReponse>(
+                host,
+                success,
+                error,
+                new Dictionary<string, object>()
+                {
+                    {"metodo","getEmpPorMim"},
+                    {"id", this.userInfo.idusuario}
+                });
+        }
+
+        public void GetEmpThemMade(Action<EmpReponse> success, Action error)
+        {
+            get<EmpReponse>(
+                host,
+                success,
+                error,
+                new Dictionary<string, object>()
+                {
+                    {"metodo","getEmpDeMim"},
+                    {"id", this.userInfo.idusuario}
+                });
+        }
+
+        public void RemoveEmp(string idEmp, Action<Response> success, Action error)
+        {
+            delete<Response>(
+                host + "/removeEmp",
+                new Dictionary<string, object>() { { "idemprestimo", idEmp } },
+                success, 
+                error);
+        }
+
+        public void ChangeEmpDate(string idEmp, string date, Action<Response> success, Action error)
+        {
+            put<Response>(
+                host + "/updateEmpDate",
+                new Dictionary<string, object>()
+                {
+                    {"idemprestimo", idEmp},
+                    {"dtDevolucao", date}
+                },
+                success,
+                error);
+        }
+
+        public void ChangEmpStatus(string idEmp, string status, Action<Response> success, Action error)
+        {
+            put<Response>(
+                host + "/changeEmpStatus",
+                new Dictionary<string, object>() 
+                {
+                    {"idemprestimo",idEmp},
+                    {"status",status},
+                },
+                success,
+                error);
+        }
 
         #endregion
 

@@ -116,7 +116,7 @@ namespace Emprestae.Pages
                 //{"image", photoStr}
             };
 
-            emprestae.CreateObjeto(args, success, error);
+            emprestae.CreateBook(args, success, error);
         }
 
         void success(Response response) 

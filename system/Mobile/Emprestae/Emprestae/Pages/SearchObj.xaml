@@ -7,11 +7,12 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
+    xmlns:views="clr-namespace:INdT.Views;assembly=INdT.Views"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
     SupportedOrientations="Portrait" Orientation="Portrait"
-    mc:Ignorable="d" d:DesignHeight="768" d:DesignWidth="480"
+    mc:Ignorable="d" d:DesignHeight="696" d:DesignWidth="480"
     shell:SystemTray.IsVisible="True">
 
     <!--LayoutRoot is the root grid where all page content is placed-->
@@ -24,36 +25,102 @@
         <!--TitlePanel contains the name of the application and page title-->
         <StackPanel x:Name="TitlePanel" Grid.Row="0" Margin="12,17,0,28">
             <TextBlock x:Name="ApplicationTitle" Text="EMPRESTAE" Style="{StaticResource PhoneTextNormalStyle}"/>
-            <!--<TextBlock x:Name="PageTitle" Text="page name" Margin="9,-7,0,0" Style="{StaticResource PhoneTextTitle1Style}"/>-->
+            <TextBlock x:Name="PageTitle" Text="busca objeto" Margin="9,-7,0,0" Style="{StaticResource PhoneTextTitle1Style}"/>
         </StackPanel>
 
+        <views:LoadingView Name="loadingLayer" Visibility="Collapsed"/>
         <!--ContentPanel - place additional content here-->
-        <StackPanel x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
-            <TextBox Name="inputText"/>
-            <toolkit:ListPicker>
-                <toolkit:ListPickerItem Name="livroItem" Content="Livro"/>
-                <toolkit:ListPickerItem Name="filmeItem" Content="Filme"/>
-                <toolkit:ListPickerItem Name="jogoItem" Content="Jogo"/>
-            </toolkit:ListPicker>
-            <ListBox Name="resultListBox">
-                
-            </ListBox>
-            
-            <Button Name="addButton" Content="novo objeto" />
-            
-        </StackPanel>
+        <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
+            <StackPanel>
+                <TextBox Name="inputText"/>
+                <toolkit:ListPicker
+                Name="objType">
+                    <toolkit:ListPickerItem Name="allItem" Content="Todos"/>
+                    <toolkit:ListPickerItem Name="livroItem" Content="Livro"/>
+                    <toolkit:ListPickerItem Name="filmeItem" Content="Filme"/>
+                    <toolkit:ListPickerItem Name="jogoItem" Content="Jogo"/>
+                </toolkit:ListPicker>
+                <ScrollViewer Name="scrollPanel"
+                    Height="380">
+                    <StackPanel>
+                        <ListBox 
+                        Height="450"
+                        Name="livrosListBox"
+                        FontSize="32">
+                            <ListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <toolkit:WrapPanel Orientation="Horizontal" ItemHeight="140" ItemWidth="140" />
+                                </ItemsPanelTemplate>
+                            </ListBox.ItemsPanel>
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="{StaticResource PhoneAccentBrush}" Width="130" Height="130" Margin="5" >
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image Source="{Binding livro.imagePath}" />
+                                            <TextBlock Text="{Binding livro.titulo}" TextWrapping="Wrap" />
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                        <ListBox
+                        Height="450"
+                        Name="jogosListBox"
+                        FontSize="32">
+                            <ListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <toolkit:WrapPanel Orientation="Horizontal" ItemHeight="140" ItemWidth="140" />
+                                </ItemsPanelTemplate>
+                            </ListBox.ItemsPanel>
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="{StaticResource PhoneAccentBrush}" Width="130" Height="130" Margin="5" >
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image Source="{Binding jogo.imagePath}" />
+                                            <TextBlock Text="{Binding jogo.titulo}" TextWrapping="Wrap"/>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                        <ListBox
+                        Height="450"
+                        Name="filmesListBox"
+                        FontSize="32">
+                            <ListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <toolkit:WrapPanel Orientation="Horizontal" ItemHeight="140" ItemWidth="140" />
+                                </ItemsPanelTemplate>
+                            </ListBox.ItemsPanel>
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="{StaticResource PhoneAccentBrush}" Width="130" Height="130" Margin="5" >
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image Source="{Binding filme.imagePath}" />
+                                            <TextBlock Text="{Binding filme.titulo}" TextWrapping="Wrap"/>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </StackPanel>
+                </ScrollViewer>
+                <Button Name="addButton" Content="novo objeto" Visibility="Collapsed" />
+            </StackPanel>
+        </Grid>
     </Grid>
  
     <!--Sample code showing usage of ApplicationBar-->
-    <!--<phone:PhoneApplicationPage.ApplicationBar>
+    <phone:PhoneApplicationPage.ApplicationBar>
         <shell:ApplicationBar IsVisible="True" IsMenuEnabled="True">
-            <shell:ApplicationBarIconButton IconUri="/Images/appbar_button1.png" Text="Button 1"/>
-            <shell:ApplicationBarIconButton IconUri="/Images/appbar_button2.png" Text="Button 2"/>
-            <shell:ApplicationBar.MenuItems>
-                <shell:ApplicationBarMenuItem Text="MenuItem 1"/>
-                <shell:ApplicationBarMenuItem Text="MenuItem 2"/>
-            </shell:ApplicationBar.MenuItems>
+            <shell:ApplicationBarIconButton 
+                IconUri="/Images/appbar.check.rest.png"
+                Text="Buscar"
+                Click="BuscarButton_OnClick"/>
+            <!--<shell:ApplicationBarIconButton
+                IconUri="/Images/appbar_button2.png"
+                Text="Button 2"/>-->
         </shell:ApplicationBar>
-    </phone:PhoneApplicationPage.ApplicationBar>-->
+    </phone:PhoneApplicationPage.ApplicationBar>
 
 </phone:PhoneApplicationPage>
