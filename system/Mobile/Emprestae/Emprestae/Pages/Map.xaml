@@ -7,6 +7,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:my="clr-namespace:Microsoft.Phone.Controls.Maps;assembly=Microsoft.Phone.Controls.Maps"
+    xmlns:views="clr-namespace:INdT.Views;assembly=INdT.Views"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
@@ -16,27 +17,25 @@
 
     <!--LayoutRoot is the root grid where all page content is placed-->
     <Grid x:Name="LayoutRoot" Background="Transparent">
-        <StackPanel x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0" Visibility="Collapsed">
+        <!--<StackPanel x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0" Visibility="Collapsed">
             <TextBlock Name="statusTextBlock"/>
             <TextBlock Name="latitudeTextBlock" />
             <TextBlock Name="longitudeTextBlock" />
-        </StackPanel>
+        </StackPanel>-->
         <my:Map                
-            Name="Map"
-            CredentialsProvider="{Binding CredentialsProvider}"
+            Name="mapa"
             CopyrightVisibility="Collapsed"
             LogoVisibility="Collapsed"
-            ZoomLevel="17"
-            Center ="-3.089, -59.966">
+            ZoomLevel="14"
+            >
 
             <my:Pushpin Location="-3.089000, -59.966" Content="IComp"/>
-            <my:Pushpin Location="-3.0896, -59.964" Content="FT"/>
 
             <!-- Routes -->
             <my:MapLayer Name="mapLayer"/>
 
         </my:Map>
-
+        <views:LoadingView Name="loadingLayer" />
     </Grid>
  
     <!--Sample code showing usage of ApplicationBar-->
