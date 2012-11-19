@@ -205,9 +205,9 @@ SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `emprestae_db`;
-INSERT INTO `emprestae_db`.`objLivro` (`idLivro`, `titulo`, `autor`, `edicao`, `editora`, `imagePath`) VALUES (1, 'l1', 'a1', 1, 'edi1', 'www.services.emprestae.com/images/objects/defaultOjectImage.jpg');
-INSERT INTO `emprestae_db`.`objLivro` (`idLivro`, `titulo`, `autor`, `edicao`, `editora`, `imagePath`) VALUES (2, 'l2', 'a2', 2, 'edi2', 'www.services.emprestae.com/images/objects/defaultObjectImage.jpg');
-INSERT INTO `emprestae_db`.`objLivro` (`idLivro`, `titulo`, `autor`, `edicao`, `editora`, `imagePath`) VALUES (3, 'l3', 'a3', 3, 'edi3', 'www.services.emprestae.com/images/objects/defaultObjectImage.jpg');
+INSERT INTO `emprestae_db`.`objLivro` (`idLivro`, `titulo`, `autor`, `edicao`, `editora`, `imagePath`) VALUES (1, 'l1', 'a1', 1, 'edi1', 'http://www.services.emprestae.com/services/images/objects/defaultObjectImage.jpg');
+INSERT INTO `emprestae_db`.`objLivro` (`idLivro`, `titulo`, `autor`, `edicao`, `editora`, `imagePath`) VALUES (2, 'l2', 'a2', 2, 'edi2', 'http://www.services.emprestae.com/services/images/objects/defaultObjectImage.jpg');
+INSERT INTO `emprestae_db`.`objLivro` (`idLivro`, `titulo`, `autor`, `edicao`, `editora`, `imagePath`) VALUES (3, 'l3', 'a3', 3, 'edi3', 'http://www.services.emprestae.com/services/images/objects/defaultObjectImage.jpg');
 
 COMMIT;
 
@@ -216,11 +216,11 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `emprestae_db`;
-INSERT INTO `emprestae_db`.`usuario` (`idusuario`, `email`, `nome`, `senha`, `addressLat`, `addressLong`, `imagePath`) VALUES (1, 'm1', 'n1', 'p1', -3.1133333, -60.0252778, 'www.services.emprestae.com/services/images/users/defaultUserImage.png');
-INSERT INTO `emprestae_db`.`usuario` (`idusuario`, `email`, `nome`, `senha`, `addressLat`, `addressLong`, `imagePath`) VALUES (2, 'm2', 'n2', 'p2', -3.11, -60.0252778, 'www.services.emprestae.com/services/images/users/defaultUserImage.png');
-INSERT INTO `emprestae_db`.`usuario` (`idusuario`, `email`, `nome`, `senha`, `addressLat`, `addressLong`, `imagePath`) VALUES (3, 'm3', 'n3', 'p3', -23.9501664, -46.325472, 'www.services.emprestae.com/services/images/users/defaultUserImage.png');
-INSERT INTO `emprestae_db`.`usuario` (`idusuario`, `email`, `nome`, `senha`, `addressLat`, `addressLong`, `imagePath`) VALUES (4, 'm4', 'n4', 'p4', 0, NULL, 'www.services.emprestae.com/services/images/users/defaultUserImage.png');
-INSERT INTO `emprestae_db`.`usuario` (`idusuario`, `email`, `nome`, `senha`, `addressLat`, `addressLong`, `imagePath`) VALUES (5, 'm5', 'n5', 'p5', NULL, NULL, 'www.services.emprestae.com/services/images/users/defaultUserImage.png');
+INSERT INTO `emprestae_db`.`usuario` (`idusuario`, `email`, `nome`, `senha`, `addressLat`, `addressLong`, `imagePath`) VALUES (1, 'm1', 'n1', 'p1', -3.1133333, -60.0252778, 'http://www.services.emprestae.com/services/images/users/defaultUserImage.png');
+INSERT INTO `emprestae_db`.`usuario` (`idusuario`, `email`, `nome`, `senha`, `addressLat`, `addressLong`, `imagePath`) VALUES (2, 'm2', 'n2', 'p2', -3.11, -60.0252778, 'http://www.services.emprestae.com/services/images/users/defaultUserImage.png');
+INSERT INTO `emprestae_db`.`usuario` (`idusuario`, `email`, `nome`, `senha`, `addressLat`, `addressLong`, `imagePath`) VALUES (3, 'm3', 'n3', 'p3', -23.9501664, -46.325472, 'http://www.services.emprestae.com/services/images/users/defaultUserImage.png');
+INSERT INTO `emprestae_db`.`usuario` (`idusuario`, `email`, `nome`, `senha`, `addressLat`, `addressLong`, `imagePath`) VALUES (4, 'm4', 'n4', 'p4', 0, NULL, 'http://www.services.emprestae.com/services/images/users/defaultUserImage.png');
+INSERT INTO `emprestae_db`.`usuario` (`idusuario`, `email`, `nome`, `senha`, `addressLat`, `addressLong`, `imagePath`) VALUES (5, 'm5', 'n5', 'p5', NULL, NULL, 'http://www.services.emprestae.com/services/images/users/defaultUserImage.png');
 
 COMMIT;
 
@@ -243,9 +243,9 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `emprestae_db`;
-INSERT INTO `emprestae_db`.`objJogo` (`idJogo`, `titulo`, `plataforma`, `produtora`, `imagePath`) VALUES (1, 'j1', 'p1', 'pr1', 'www.services.emprestae.com/images/objects/defaultObjectImage.jpg');
-INSERT INTO `emprestae_db`.`objJogo` (`idJogo`, `titulo`, `plataforma`, `produtora`, `imagePath`) VALUES (2, 'j2', 'p2', 'pr2', 'www.services.emprestae.com/images/objects/defaultObjectImage.jpg');
-INSERT INTO `emprestae_db`.`objJogo` (`idJogo`, `titulo`, `plataforma`, `produtora`, `imagePath`) VALUES (3, 'j3', 'p3', 'pr3', 'www.services.emprestae.com/images/objects/defaultObjectImage.jpg');
+INSERT INTO `emprestae_db`.`objJogo` (`idJogo`, `titulo`, `plataforma`, `produtora`, `imagePath`) VALUES (1, 'j1', 'p1', 'pr1', 'http://www.services.emprestae.com/services/images/objects/defaultObjectImage.jpg');
+INSERT INTO `emprestae_db`.`objJogo` (`idJogo`, `titulo`, `plataforma`, `produtora`, `imagePath`) VALUES (2, 'j2', 'p2', 'pr2', 'http://www.services.emprestae.com/services/images/objects/defaultObjectImage.jpg');
+INSERT INTO `emprestae_db`.`objJogo` (`idJogo`, `titulo`, `plataforma`, `produtora`, `imagePath`) VALUES (3, 'j3', 'p3', 'pr3', 'http://www.services.emprestae.com/services/images/objects/defaultObjectImage.jpg');
 
 COMMIT;
 
@@ -254,9 +254,9 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `emprestae_db`;
-INSERT INTO `emprestae_db`.`objFilme` (`idFilme`, `titulo`, `distribuidora`, `diretor`, `imagePath`) VALUES (1, 'f1', 'dis1', 'd1', 'www.services.emprestae.com/images/objects/defaultObjectImage.jpg');
-INSERT INTO `emprestae_db`.`objFilme` (`idFilme`, `titulo`, `distribuidora`, `diretor`, `imagePath`) VALUES (2, 'f2', 'dis2', 'd2', 'www.services.emprestae.com/images/objects/defaultObjectImage.jpg');
-INSERT INTO `emprestae_db`.`objFilme` (`idFilme`, `titulo`, `distribuidora`, `diretor`, `imagePath`) VALUES (3, 'f3', 'dis3', 'd3', 'www.services.emprestae.com/images/objects/defaultObjectImage.jpg');
+INSERT INTO `emprestae_db`.`objFilme` (`idFilme`, `titulo`, `distribuidora`, `diretor`, `imagePath`) VALUES (1, 'f1', 'dis1', 'd1', 'http://www.services.emprestae.com/services/images/objects/defaultObjectImage.jpg');
+INSERT INTO `emprestae_db`.`objFilme` (`idFilme`, `titulo`, `distribuidora`, `diretor`, `imagePath`) VALUES (2, 'f2', 'dis2', 'd2', 'http://www.services.emprestae.com/services/images/objects/defaultObjectImage.jpg');
+INSERT INTO `emprestae_db`.`objFilme` (`idFilme`, `titulo`, `distribuidora`, `diretor`, `imagePath`) VALUES (3, 'f3', 'dis3', 'd3', 'http://www.services.emprestae.com/services/images/objects/defaultObjectImage.jpg');
 
 COMMIT;
 

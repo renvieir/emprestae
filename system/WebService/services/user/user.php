@@ -1,15 +1,13 @@
 <?php
 
-//require "bd_connection.php";
-
 $app->post("/createUser", "createUser");
 $app->put("/updateUser", "updateUser");
 $app->delete("/removeUser", "removeUser");
 $app->post("/checkUser", "checkUser");
-$app->get("/getUserInfo/:email", "getUserInfo");
-$app->get("/getAllUsersBut/:email", "getAllUsersBut");
-$app->get("/getAllUsersByName/:nome", "getAllUsersByName");
-$app->get("/getCloseUsers/:userId/:lat/:long", "getCloseUsers");
+$app->get("/getUserInfo/:appID/:data/:iv", "getUserInfo");
+$app->get("/getAllUsersBut/:appID/:data/:iv", "getAllUsersBut");
+$app->get("/getAllUsersByName/:appID/:data/:iv", "getAllUsersByName");
+$app->get("/getCloseUsers/:appID/:data/:iv", "getCloseUsers");
 
 function createUser() {
 
@@ -20,12 +18,17 @@ function createUser() {
 	$json = readRequestBody($request);
 	if (!$json) {
 		$response["status"] = 0;
-		$response["aqui"] = 1;
 		echo json_encode($response);
 		return;
 	}
 
 	/* lendo dados do json */
+
+	$appID = $json->appID;
+	$crypt_data = $json->data;
+	$iv = $json->iv;
+	$json = json_decode(decrypt_data($appID, $crypt_data, $iv));
+
 	$name = $json->nome; $email = $json->email; $pwd = $json->senha;
 	$lat = $json->addressLat; $long = $json->addressLong;
 
@@ -45,15 +48,16 @@ function createUser() {
 		$stmt->bindParam(":lat", $lat);
 		$stmt->bindParam(":long", $long);
 		$stmt->bindParam(":imPath", $imPath);
-
 		$stmt->execute();
 	} catch (PDOException $e) {
 		$response["status"] = 0;
-		$response["aqui"] = 0;
 	}
 
 	closeConnection($dbh);
-	echo json_encode($response);
+	$json = json_encode($response);
+	$data = encrypt_data($appID, $json);
+	echo json_encode($data);
+
 	return;
 }
 
@@ -71,9 +75,15 @@ function updateUser() {
 	}
 
 	/* lendo dados do json */
+
+	$appID = $json->appID;
+	$crypt_data = $json->data;
+	$iv = $json->iv;
+	$json = json_decode(decrypt_data($appID, $crypt_data, $iv));
+
 	$name = $json->nome; $email = $json->email; $pwd = $json->senha;
 	$lat = $json->addressLat; $long = $json->addressLong;
-	$idUSer = $json->idusuario;
+	$idUser = $json->idusuario;
 	
 	//$imPath = createImage($email, $json->imagePath, true);
 	$imPath = null;
@@ -94,8 +104,13 @@ function updateUser() {
 	$stmt->bindParam(":idUser", $idUser);
 	$stmt->execute();
 
+	$response['id'] = $idUser;
+
 	closeConnection($dbh);
-	echo json_encode($response);
+	$json = json_encode($response);
+	$data = encrypt_data($appID, $json);
+	echo json_encode($data);
+
 	return;
 }
 
@@ -113,6 +128,12 @@ function removeUser() {
 	}
 
 	/* lendo dados do json */
+
+	$appID = $json->appID;
+	$crypt_data = $json->data;
+	$iv = $json->iv;
+	$json = json_decode(decrypt_data($appID, $crypt_data, $iv));
+
 	$email = $json->email;
 
 	$response["status"] = 1;
@@ -124,7 +145,10 @@ function removeUser() {
 	$stmt->execute();
 
 	closeConnection($dbh);
-	echo json_encode($response);
+	$json = json_encode($response);
+	$data = encrypt_data($appID, $json);
+	echo json_encode($data);
+
 	return;
 }
 
@@ -142,6 +166,12 @@ function checkUser() {
 	}
 
 	/* lendo dados do json */
+
+	$appID = $json->appID;
+	$crypt_data = $json->data;
+	$iv = $json->iv;
+	$json = json_decode(decrypt_data($appID, $crypt_data, $iv));
+
 	$email = $json->email; $pwd = $json->senha;
 
 	$response["status"] = 1;
@@ -158,17 +188,20 @@ function checkUser() {
 		$response["status"] = 0;
 
 	closeConnection($dbh);
-	echo json_encode($response);
-	return;
+	$json = json_encode($response);
+	$data = encrypt_data($appID, $json);
+	echo json_encode($data);
 
+	return;
 }
 
-function getUserInfo($mail) {
+function getUserInfo($appID, $data, $iv) {
 
 	global $userTable;
 
-	$response["status"] = 0;
-	$email = $mail;
+	$json = json_decode(decrypt_data($appID, $data, $iv));
+	$email = $json->email;
+
 	$dbh = getConnection();
 	$sql = "select idusuario, nome, email, addressLat, addressLong, imagePath
 										from $userTable where email = :email";
@@ -183,16 +216,21 @@ function getUserInfo($mail) {
 		$response["status"] = 1;
 
 	closeConnection($dbh);
-	echo json_encode($response);
+	$json = json_encode($response);
+	$data = encrypt_data($appID, $json);
+	echo json_encode($data);
+
 	return;
 }
 
-function getAllUsersBut($mail) {
+function getAllUsersBut($appID, $data, $iv) {
 
 	global $userTable;
 
+	$json = json_decode(decrypt_data($appID, $data, $iv));
 	$response["status"] = 0;
-	$email = $mail;
+	$email = $json->$email;
+
 	$dbh = getConnection();
 	$sql = "select idusuario, nome, email, addressLat, addressLong, imagePath
 										from $userTable where email != :email";
@@ -207,15 +245,21 @@ function getAllUsersBut($mail) {
 		$response["status"] = 1;
 
 	closeConnection($dbh);
-	echo json_encode($response);
+	$json = json_encode($response);
+	$data = encrypt_data($appID, $json);
+	echo json_encode($data);
+
 	return;
 }
 
-function getAllUsersByName($name) {
+function getAllUsersByName($appID, $data, $iv) {
 
 	global $userTable;
 
+	$json = json_decode(decrypt_data($appID, $data, $iv));
 	$response["status"] = 0;
+	$name = $json->nome;
+
 	$dbh = getConnection();
 	$sql = "select idusuario, nome, email, addressLat, addressLong, imagePath
 										from $userTable where nome like '%$name%'";
@@ -229,15 +273,24 @@ function getAllUsersByName($name) {
 		$response["status"] = 1;
 
 	closeConnection($dbh);
-	echo json_encode($response);
+	$json = json_encode($response);
+	$data = encrypt_data($appID, $json);
+	echo json_encode($data);
+
 	return;
 }
 
-function getCloseUsers($id1, $userLat, $userLong) {
+function getCloseUsers($appID, $data, $iv) {
 
 	global $friendTable;
 	
+	$json = json_decode(decrypt_data($appID, $data, $iv));
+	
 	$response["status"] = 0;
+	$id1 = $json->idusuario;
+	$userLat = $json->addressLat;
+	$userLong = $json->addressLong;
+
 	$dbh = getConnection();
 
 	$sql = "SELECT idusuario, nome, email, addressLat, addressLong, imagePath
@@ -282,7 +335,10 @@ function getCloseUsers($id1, $userLat, $userLong) {
 		$response["status"] = 1;
 
 	closeConnection($dbh);
-	echo json_encode($response);
+	$json = json_encode($response);
+	$data = encrypt_data($appID, $json);
+	echo json_encode($data);
+
 	return;
 }
 

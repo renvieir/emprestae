@@ -2,9 +2,9 @@
 
 $app->post("/createBook", "createObjBook");
 $app->put("/updateBook", "updateObjBook");
-$app->get("/getBookInfo/:id", "getObjBookInfo");
+$app->get("/getBookInfo/:appID/:data/:iv", "getObjBookInfo");
 $app->get("/getAllBooks", "getAllObjBooks");
-$app->get("/getSimilarBooks/:titulo", "getSimilarObjBooks");
+$app->get("/getSimilarBooks/:appID/:data/:iv", "getSimilarObjBooks");
 $app->delete("/removeBook", "removeObjBook");
 
 function createObjBook() {
@@ -21,6 +21,12 @@ function createObjBook() {
 	}
 
 	/* lendo dados do json */
+
+	$appID = $json->appID;
+	$crypt_data = $json->data;
+	$iv = $json->iv;
+	$json = json_decode(decrypt_data($appID, $crypt_data, $iv));
+
 	$title = $json->titulo; $author = $json->autor; $ed = $json->edicao;
 	$house = $json->editora;
 	//$imPath = createImage($title, $json->image, false);
@@ -45,7 +51,10 @@ function createObjBook() {
 	}
 
 	closeConnection($dbh);
-	echo json_encode($response);
+	$json = json_encode($response);
+	$data = encrypt_data($appID, $json);
+	echo json_encode($data);
+
 	return;
 }
 
@@ -63,6 +72,12 @@ function updateObjBook() {
 	}
 
 	/* lendo dados do json */
+
+	$appID = $json->appID;
+	$crypt_data = $json->data;
+	$iv = $json->iv;
+	$json = json_decode(decrypt_data($appID, $crypt_data, $iv));
+
 	$title = $json->titulo; $author = $json->autor; $ed = $json->edicao;
 	$house = $json->editora; $id = $json->idLivro;
 	//$imPath = createImage($title, $json->image, false);
@@ -84,18 +99,23 @@ function updateObjBook() {
 	$stmt->execute();
 
 	closeConnection($dbh);
-	echo json_encode($response);
+	$json = json_encode($response);
+	$data = encrypt_data($appID, $json);
+	echo json_encode($data);
+
 	return;
 }
 
-function getObjBookInfo($id) {
+function getObjBookInfo($appID, $data, $iv) {
 
 	global $bookTable;
-
+	
+	$json = json_decode(decrypt_data($appID, $data, $iv));
+	$id = $json->idLivro;
 	$response["status"] = 0;
-	$dbh = getConnection();
 
-	$sql = "select * from $bookTable";
+	$dbh = getConnection();
+	$sql = "select * from $bookTable where idLivro = :id";
 	$stmt = $dbh->prepare($sql);
 	$stmt->bindParam(":id", $id);
 	$stmt->execute();
@@ -107,7 +127,10 @@ function getObjBookInfo($id) {
 		$response["status"] = 1;
 
 	closeConnection($dbh);
-	echo json_encode($response);
+	$json = json_encode($response);
+	$data = encrypt_data($appID, $json);
+	echo json_encode($data);
+
 	return;
 }
 
@@ -129,14 +152,19 @@ function getAllObjBooks() {
 		$response["status"] = 1;
 
 	closeConnection($dbh);
-	echo json_encode($response);
+	$json = json_encode($response);
+	$data = encrypt_data($appID, $json);
+	echo json_encode($data);
+
 	return;
 }
 
-function getSimilarObjBooks($titulo) {
+function getSimilarObjBooks($appID, $data, $iv) {
 
 	global $bookTable;
-
+	
+	$json = json_decode(decrypt_data($appID, $data, $iv));
+	$titulo = $json->titulo;
 	$response["status"] = 0;
 	$dbh = getConnection();
 
@@ -151,7 +179,10 @@ function getSimilarObjBooks($titulo) {
 		$response["status"] = 1;
 
 	closeConnection($dbh);
-	echo json_encode($response);
+	$json = json_encode($response);
+	$data = encrypt_data($appID, $json);
+	echo json_encode($data);
+
 	return;
 }
 
@@ -169,6 +200,12 @@ function removeObjBook() {
 	}
 
 	/* lendo dados do json */
+
+	$appID = $json->appID;
+	$crypt_data = $json->data;
+	$iv = $json->iv;
+	$json = json_decode(decrypt_data($appID, $crypt_data, $iv));
+
 	$id = $json->idLivro;
 
 	$response["status"] = 1;
@@ -180,7 +217,10 @@ function removeObjBook() {
 	$stmt->execute();
 
 	closeConnection($dbh);
-	echo json_encode($response);
+	$json = json_encode($response);
+	$data = encrypt_data($appID, $json);
+	echo json_encode($data);
+
 	return;
 }
 
