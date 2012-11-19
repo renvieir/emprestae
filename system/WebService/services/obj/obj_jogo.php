@@ -2,9 +2,9 @@
 
 $app->post("/createGame", "createObjGame");
 $app->put("/updateGame", "updateObjGame");
-$app->get("/getGameInfo/:id", "getObjGameInfo");
+$app->get("/getGameInfo/:appID/:data/:iv", "getObjGameInfo");
 $app->get("/getAllGames", "getAllObjGames");
-$app->get("/getSimilarGames/:titulo", "getSimilarObjGames");
+$app->get("/getSimilarGames/:appID/:data/:iv", "getSimilarObjGames");
 $app->delete("/removeGame", "removeObjGame");
 
 function createObjGame() {
@@ -21,6 +21,12 @@ function createObjGame() {
 	}
 
 	/* lendo dados do json */
+
+	$appID = $json->appID;
+	$crypt_data = $json->data;
+	$iv = $json->iv;
+	$json = json_decode(decrypt_data($appID, $crypt_data, $iv));
+
 	$title = $json->titulo; $platform = $json->plataforma;
 	$house = $json->produtora;
 	//$imPath = createImage($title, $json->image, false);
@@ -44,7 +50,10 @@ function createObjGame() {
 	}
 
 	closeConnection($dbh);
-	echo json_encode($response);
+	$json = json_encode($response);
+	$data = encrypt_data($appID, $json);
+	echo json_encode($data);
+
 	return;
 }
 
@@ -62,6 +71,12 @@ function updateObjGame() {
 	}
 
 	/* lendo dados do json */
+
+	$appID = $json->appID;
+	$crypt_data = $json->data;
+	$iv = $json->iv;
+	$json = json_decode(decrypt_data($appID, $crypt_data, $iv));
+
 	$title = $json->titulo; $platform = $json->plataforma;
 	$house = $json->produtora; $id = $json->idJogo;
 	//$imPath = createImage($title, $json->image, false);
@@ -81,17 +96,22 @@ function updateObjGame() {
 	$stmt->execute();
 
 	closeConnection($dbh);
-	echo json_encode($response);
+	$json = json_encode($response);
+	$data = encrypt_data($appID, $json);
+	echo json_encode($data);
+
 	return;
 }
 
-function getObjGameInfo($id) {
+function getObjGameInfo($appID, $data, $iv) {
 
 	global $gameTable;
 
+	$json = json_decode(decrypt_data($appID, $data, $iv));
+	$id = $json->idJogo;
 	$response["status"] = 0;
-	$dbh = getConnection();
 
+	$dbh = getConnection();
 	$sql = "select * from $gameTable where idJogo = :id";
 	$stmt = $dbh->prepare($sql);
 	$stmt->bindParam(":id", $id);
@@ -104,7 +124,10 @@ function getObjGameInfo($id) {
 		$response["status"] = 1;
 
 	closeConnection($dbh);
-	echo json_encode($response);
+	$json = json_encode($response);
+	$data = encrypt_data($appID, $json);
+	echo json_encode($data);
+
 	return;
 }
 
@@ -126,17 +149,22 @@ function getAllObjGames() {
 		$response["status"] = 1;
 
 	closeConnection($dbh);
-	echo json_encode($response);
+	$json = json_encode($response);
+	$data = encrypt_data($appID, $json);
+	echo json_encode($data);
+
 	return;
 }
 
-function getSimilarObjGames($titulo) {
+function getSimilarObjGames($appID, $data, $iv) {
 
 	global $gameTable;
-
+	
+	$json = json_decode(decrypt_data($appID, $data, $iv));
+	$titulo = $json->titulo;
 	$response["status"] = 0;
-	$dbh = getConnection();
 
+	$dbh = getConnection();
 	$sql = "select * from $gameTable where titulo like '%$titulo%'";
 	$stmt = $dbh->prepare($sql);
 	$stmt->execute();
@@ -148,7 +176,10 @@ function getSimilarObjGames($titulo) {
 		$response["status"] = 1;
 
 	closeConnection($dbh);
-	echo json_encode($response);
+	$json = json_encode($response);
+	$data = encrypt_data($appID, $json);
+	echo json_encode($data);
+
 	return;
 }
 
@@ -166,6 +197,12 @@ function removeObjGame() {
 	}
 
 	/* lendo dados do json */
+
+	$appID = $json->appID;
+	$crypt_data = $json->data;
+	$iv = $json->iv;
+	$json = json_decode(decrypt_data($appID, $crypt_data, $iv));
+
 	$id = $json->idJogo;
 
 	$response["status"] = 1;
@@ -177,7 +214,10 @@ function removeObjGame() {
 	$stmt->execute();
 
 	closeConnection($dbh);
-	echo json_encode($response);
+	$json = json_encode($response);
+	$data = encrypt_data($appID, $json);
+	echo json_encode($data);
+
 	return;
 }
 

@@ -8,9 +8,15 @@
 	$gameTable = "objJogo";
 	$bookTable = "objLivro";
 	$loanTable = "emprestimo";
-	$patrimonio = Array("a" => ["Livro", "possuiLivro"],
-						"b" => ["Jogo","possuiJogo"],
-						"c" => ["Filme", "possuiFilme"]);
+	$patrimonio = Array(
+		"a" => ["Livro", "possuiLivro"],
+		"b" => ["Jogo","possuiJogo"],
+		"c" => ["Filme", "possuiFilme"]
+	);
+	$appIDs = Array(
+		"mobileID" => "m0b1l3@@",
+		"siteID" => "s1t3@@"
+	);
 
 	function getConnection() {
 

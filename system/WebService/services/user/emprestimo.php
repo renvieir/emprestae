@@ -3,9 +3,9 @@
 $app->post("/requestEmp", "solicitaEmprestimo");
 $app->put("/acceptEmp", "aceitaEmprestar");
 
-$app->get("/getEmpPorMim/:id1", "getEmpPorMim");
-$app->get("/getEmpDeMim/:id1", "getEmpDeMim");
-$app->get("/getEmpRequestDeMim/:id1", "getEmpRequestDeMim");
+$app->get("/getEmpPorMim/:appID/:data/:iv", "getEmpPorMim");
+$app->get("/getEmpDeMim/:appID/:data/:iv", "getEmpDeMim");
+$app->get("/getEmpRequestDeMim/:appID/:data/:iv", "getEmpRequestDeMim");
 
 $app->delete("/removeEmp", "removeEmprestimo");
 
@@ -28,6 +28,12 @@ function solicitaEmprestimo(){
 	}
 
 	/* lendo dados do json */
+
+	$appID = $json->appID;
+	$crypt_data = $json->data;
+	$iv = $json->iv;
+	$json = json_decode(decrypt_data($appID, $crypt_data, $iv));
+
 	$id1 = $json->fk_idUser1; $id2 = $json->fk_idUser2;
 	$objId = $json->idObj; $objType = $json->tipoObjeto;
 	$stDate = $json->dtEmprestimo; $endDate = $json->dtDevolucao;
@@ -59,7 +65,10 @@ function solicitaEmprestimo(){
 	}
 
 	closeConnection($dbh);
-	echo json_encode($response);
+	$json = json_encode($response);
+	$data = encrypt_data($appID, $json);
+	echo json_encode($data);
+
 	return;
 }
 
@@ -77,6 +86,12 @@ function aceitaEmprestar() {
 	}
 
 	/* lendo dados do json */
+
+	$appID = $json->appID;
+	$crypt_data = $json->data;
+	$iv = $json->iv;
+	$json = json_decode(decrypt_data($appID, $crypt_data, $iv));
+
 	$idEmp = $json->idemprestimo;
 
 	$response["status"] = 1;
@@ -92,16 +107,22 @@ function aceitaEmprestar() {
 	}
 
 	closeConnection($dbh);
-	echo json_encode($response);
+	$json = json_encode($response);
+	$data = encrypt_data($appID, $json);
+	echo json_encode($data);
+
 	return;
 }
 
 /* Objetos que o usuario emprestou de outros usuarios */
-function getEmpPorMim($id) {
+function getEmpPorMim($appID, $data, $iv) {
 
 	global $loanTable;
 
+	$json = json_decode(decrypt_data($appID, $data, $iv));
+	$id = $json->idusuario;
 	$response["status"] = 1;
+
 	$dbh = getConnection();
 	$sql = "select * from $loanTable where fk_idUser1 = :id and status != 0";
 	$stmt = $dbh->prepare($sql);
@@ -115,16 +136,22 @@ function getEmpPorMim($id) {
 		$response["status"] = 1;
 
 	closeConnection($dbh);
-	echo json_encode($response);
+	$json = json_encode($response);
+	$data = encrypt_data($appID, $json);
+	echo json_encode($data);
+
 	return;
 }
 
 /* Objetos que o usuario emprestou para outros usuarios */
-function getEmpDeMim($id) {
+function getEmpDeMim($appID, $data, $iv) {
 
 	global $loanTable;
 
+	$json = json_decode(decrypt_data($appID, $data, $iv));
+	$id = $json->idusuario;
 	$response["status"] = 1;
+
 	$dbh = getConnection();
 	$sql = "select * from $loanTable where fk_idUser2 = :id and status != 0";
 	$stmt = $dbh->prepare($sql);
@@ -138,15 +165,21 @@ function getEmpDeMim($id) {
 		$response["status"] = 1;
 
 	closeConnection($dbh);
-	echo json_encode($response);
+	$json = json_encode($response);
+	$data = encrypt_data($appID, $json);
+	echo json_encode($data);
+
 	return;
 }
 
-function getEmpRequestDeMim($id) {
+function getEmpRequestDeMim($appID, $data, $iv) {
 
 	global $loanTable;
-
+	
+	$json = json_decode(decrypt_data($appID, $data, $iv));
+	$id = $json->idusuario;
 	$response["status"] = 1;
+
 	$dbh = getConnection();
 	$sql = "select * from $loanTable where fk_idUser2 = :id and status = 0";
 	$stmt = $dbh->prepare($sql);
@@ -160,7 +193,10 @@ function getEmpRequestDeMim($id) {
 		$response["status"] = 1;
 
 	closeConnection($dbh);
-	echo json_encode($response);
+	$json = json_encode($response);
+	$data = encrypt_data($appID, $json);
+	echo json_encode($data);
+
 	return;
 }
 
@@ -178,6 +214,12 @@ function removeEmprestimo() {
 	}
 
 	/* lendo dados do json */
+
+	$appID = $json->appID;
+	$crypt_data = $json->data;
+	$iv = $json->iv;
+	$json = json_decode(decrypt_data($appID, $crypt_data, $iv));
+
 	$idEmp = $json->idemprestimo;
 
 	$response["status"] = 1;
@@ -188,7 +230,10 @@ function removeEmprestimo() {
 	$stmt->execute();
 
 	closeConnection($dbh);
-	echo json_encode($response);
+	$json = json_encode($response);
+	$data = encrypt_data($appID, $json);
+	echo json_encode($data);
+
 	return;
 }
 
@@ -207,6 +252,12 @@ function updateEmprestimo(){
 	}
 
 	/* lendo dados do json */
+
+	$appID = $json->appID;
+	$crypt_data = $json->data;
+	$iv = $json->iv;
+	$json = json_decode(decrypt_data($appID, $crypt_data, $iv));
+
 	$idEmp = $json->idemprestimo; $endDate = $json->dtDevolucao;
 
 	$response["status"] = 1;
@@ -224,7 +275,10 @@ function updateEmprestimo(){
 	}
 
 	closeConnection($dbh);
-	echo json_encode($response);
+	$json = json_encode($response);
+	$data = encrypt_data($appID, $json);
+	echo json_encode($data);
+
 	return;
 }
 
@@ -243,6 +297,12 @@ function changeEmprestimoStatus() {
 	}
 
 	/* lendo dados do json */
+
+	$appID = $json->appID;
+	$crypt_data = $json->data;
+	$iv = $json->iv;
+	$json = json_decode(decrypt_data($appID, $crypt_data, $iv));
+
 	$idEmp = $json->idemprestimo; $status = $json->status;
 
 	$response["status"] = 1;
@@ -259,7 +319,10 @@ function changeEmprestimoStatus() {
 	}
 
 	closeConnection($dbh);
-	echo json_encode($response);
+	$json = json_encode($response);
+	$data = encrypt_data($appID, $json);
+	echo json_encode($data);
+
 	return;
 }
 
