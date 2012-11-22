@@ -1,14 +1,14 @@
 <?php
 
-$app->get("/getUserObjs/:userID", "getUserObjs");
+$app->get("/getUserObjs/:appID/:data/:iv", "getUserObjs");
 $app->post("/addUserObj", "addUserObj");
 $app->delete("/removeUserObj", "removeUserObj");
 
 /* return object ids in a list */
-function getUserObjs($userID) {
+function getUserObjs($appID, $data, $iv) {
 
-	global $patrimonio;
-
+	$json = json_decode(decrypt_data($appID, $data, $iv));
+	$userID = $json->idusuario;
 	$response["status"] = 1;
 	$dbh = getConnection();
 
@@ -31,7 +31,10 @@ function getUserObjs($userID) {
 	}
 
 	closeConnection($dbh);
-	echo json_encode($response);
+	$json = json_encode($response);
+	$data = encrypt_data($appID, $json);
+	echo json_encode($data);
+
 	return;
 }
 
@@ -49,6 +52,12 @@ function removeUserObj() {
 	}
 
 	/* lendo dados do json */
+
+	$appID = $json->appID;
+	$crypt_data = $json->data;
+	$iv = $json->iv;
+	$json = json_decode(decrypt_data($appID, $crypt_data, $iv));
+
 	$userId = $json->userId; $objId = $json->objId; $objType = $json->objType;
 
 	/* the objType doesn't exist */
@@ -71,7 +80,10 @@ function removeUserObj() {
 	$stmt->execute();
 
 	closeConnection($dbh);
-	echo json_encode($response);
+	$json = json_encode($response);
+	$data = encrypt_data($appID, $json);
+	echo json_encode($data);
+
 	return;
 }
 
@@ -89,6 +101,12 @@ function addUserObj() {
 	}
 
 	/* lendo dados do json */
+
+	$appID = $json->appID;
+	$crypt_data = $json->data;
+	$iv = $json->iv;
+	$json = json_decode(decrypt_data($appID, $crypt_data, $iv));
+
 	$userId = $json->userId; $objId = $json->objId; $objType = $json->objType;
 
 	/* the objType doesn't exist */
@@ -118,7 +136,10 @@ function addUserObj() {
 	}
 
 	closeConnection($dbh);
-	echo json_encode($response);
+	$json = json_encode($response);
+	$data = encrypt_data($appID, $json);
+	echo json_encode($data);
+
 	return;
 }
 

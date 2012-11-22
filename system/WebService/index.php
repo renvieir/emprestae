@@ -36,16 +36,18 @@ function raiz() {
 	echo "FUNCIONANDO WEB SERVICE!";
 }
 
-require "services/bd_connection.php";
-require "services/treat_request.php";
-require "services/image.php";
-require "services/friendship.php";
-require "services/user.php";
-require "services/obj_livro.php";
-require "services/obj_filme.php";
-require "services/obj_jogo.php";
-require "services/patrimonio.php";
-require "services/emprestimo.php";
+require "services/handles/handle_bd_connection.php";
+require "services/handles/handle_msg_body.php";
+require "services/handles/handle_image.php";
+
+require "services/obj/obj_livro.php";
+require "services/obj/obj_filme.php";
+require "services/obj/obj_jogo.php";
+
+require "services/user/friendship.php";
+require "services/user/user.php";
+require "services/user/patrimonio.php";
+require "services/user/emprestimo.php";
 
 /**
  * Step 4: Run the Slim application

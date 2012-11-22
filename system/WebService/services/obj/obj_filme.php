@@ -2,9 +2,9 @@
 
 $app->post("/createFilm", "createObjFilm");
 $app->put("/updateFilm", "updateObjFilm");
-$app->get("/getFilmInfo/:id", "getObjFilmInfo");
+$app->get("/getFilmInfo/:appID/:data/:iv", "getObjFilmInfo");
 $app->get("/getAllFilms", "getAllObjFilms");
-$app->get("/getSimilarFilms/:titulo", "getSimilarObjFilms");
+$app->get("/getSimilarFilms/:appID/:data/:iv", "getSimilarObjFilms");
 $app->delete("/removeFilm", "removeObjFilm");
 
 function createObjFilm() {
@@ -21,6 +21,12 @@ function createObjFilm() {
 	}
 
 	/* lendo dados do json */
+
+	$appID = $json->appID;
+	$crypt_data = $json->data;
+	$iv = $json->iv;
+	$json = json_decode(decrypt_data($appID, $crypt_data, $iv));
+
 	$title = $json->titulo; $director = $json->diretor;
 	$house = $json->distribuidora;
 	//$imPath = createImage($title, $json->image, false);
@@ -43,7 +49,10 @@ function createObjFilm() {
 	}
 
 	closeConnection($dbh);
-	echo json_encode($response);
+	$json = json_encode($response);
+	$data = encrypt_data($appID, $json);
+	echo json_encode($data);
+
 	return;
 }
 
@@ -61,6 +70,12 @@ function updateObjFilm() {
 	}
 
 	/* lendo dados do json */
+
+	$appID = $json->appID;
+	$crypt_data = $json->data;
+	$iv = $json->iv;
+	$json = json_decode(decrypt_data($appID, $crypt_data, $iv));
+
 	$title = $json->titulo; $director = $json->diretor;
 	$house = $json->distribuidora; $id = $json->idFilme;
 	//$imPath = createImage($title, $json->image, false);
@@ -81,7 +96,10 @@ function updateObjFilm() {
 	$stmt->execute();
 
 	closeConnection($dbh);
-	echo json_encode($response);
+	$json = json_encode($response);
+	$data = encrypt_data($appID, $json);
+	echo json_encode($data);
+
 	return;
 }
 
@@ -103,17 +121,22 @@ function getAllObjFilms() {
 		$response["status"] = 1;
 
 	closeConnection($dbh);
-	echo json_encode($response);
+	$json = json_encode($response);
+	$data = encrypt_data($appID, $json);
+	echo json_encode($data);
+
 	return;
 }
 
-function getSimilarObjFilms($titulo) {
+function getSimilarObjFilms($appID, $data, $iv) {
 
 	global $filmTable;
 
+	$json = json_decode(decrypt_data($appID, $data, $iv));
+	$titulo = $json->titulo;
 	$response["status"] = 0;
-	$dbh = getConnection();
 
+	$dbh = getConnection();
 	$sql = "select * from $filmTable where titulo like '%$titulo%' ";
 	$stmt = $dbh->prepare($sql);
 	$stmt->execute();
@@ -125,17 +148,22 @@ function getSimilarObjFilms($titulo) {
 		$response["status"] = 1;
 
 	closeConnection($dbh);
-	echo json_encode($response);
+	$json = json_encode($response);
+	$data = encrypt_data($appID, $json);
+	echo json_encode($data);
+
 	return;
 }
 
-function getObjFilmInfo($id) {
+function getObjFilmInfo($appID, $data, $iv) {
 
 	global $filmTable;
 
+	$json = json_decode(decrypt_data($appID, $data, $iv));
+	$id = $json->idFilme;
 	$response["status"] = 0;
-	$dbh = getConnection();
 
+	$dbh = getConnection();
 	$sql = "select * from $filmTable where idFilme = :id";
 	$stmt = $dbh->prepare($sql);
 	$stmt->bindParam(":id", $id);
@@ -148,7 +176,10 @@ function getObjFilmInfo($id) {
 		$response["status"] = 1;
 
 	closeConnection($dbh);
-	echo json_encode($response);
+	$json = json_encode($response);
+	$data = encrypt_data($appID, $json);
+	echo json_encode($data);
+
 	return;
 }
 
@@ -166,6 +197,12 @@ function removeObjFilm() {
 	}
 
 	/* lendo dados do json */
+
+	$appID = $json->appID;
+	$crypt_data = $json->data;
+	$iv = $json->iv;
+	$json = json_decode(decrypt_data($appID, $crypt_data, $iv));
+
 	$id = $json->idFilme;
 
 	$response["status"] = 1;
@@ -177,7 +214,10 @@ function removeObjFilm() {
 	$stmt->execute();
 
 	closeConnection($dbh);
-	echo json_encode($response);
+	$json = json_encode($response);
+	$data = encrypt_data($appID, $json);
+	echo json_encode($data);
+
 	return;
 }
 

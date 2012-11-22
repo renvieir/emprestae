@@ -3,8 +3,8 @@
 $app->post("/requestFriend", "requestFriendship");
 $app->put("/acceptFriend", "addFriendship");
 $app->delete("/removeFriends", "deleteFriendship");
-$app->get("/getFriends/:id1", "getFriends");
-$app->get("/getFriendsRequest/:id1", "getFriendsRequest");
+$app->get("/getFriends/:appID/:data/:iv", "getFriends");
+$app->get("/getFriendsRequest/:appID/:data/:iv", "getFriendsRequest");
 
 function requestFriendship() {
 	
@@ -20,6 +20,12 @@ function requestFriendship() {
 	}
 
 	/* lendo dados do json */
+
+	$appID = $json->appID;
+	$crypt_data = $json->data;
+	$iv = $json->iv;
+	$json = json_decode(decrypt_data($appID, $crypt_data, $iv));
+
 	$id1 = $json->id1; $id2 = $json->id2;
 
 	$response["status"] = 1;
@@ -44,7 +50,9 @@ function requestFriendship() {
 	}
 
 	closeConnection($dbh);
-	echo json_encode($response);
+	$json = json_encode($response);
+	$data = encrypt_data($appID, $json);
+	echo json_encode($data);
 }
 
 function addFriendship () {
@@ -61,6 +69,12 @@ function addFriendship () {
 	}
 
 	/* lendo dados do json */
+
+	$appID = $json->appID;
+	$crypt_data = $json->data;
+	$iv = $json->iv;
+	$json = json_decode(decrypt_data($appID, $crypt_data, $iv));
+
 	$id1 = $json->id1; $id2 = $json->id2;
 
 	$response["status"] = 1;
@@ -81,7 +95,9 @@ function addFriendship () {
 	}
 
 	closeConnection($dbh);
-	echo json_encode($response);
+	$json = json_encode($response);
+	$data = encrypt_data($appID, $json);
+	echo json_encode($data);
 }
 
 function deleteFriendship() {
@@ -98,7 +114,13 @@ function deleteFriendship() {
 	}
 
 	/* lendo dados do json */
-	$id1 = $json->id1; $id2 = $json->id2;
+
+	$appID = $json->appID;
+	$crypt_data = $json->data;
+	$iv = $json->iv;
+	$json = json_decode(decrypt_data($appID, $crypt_data, $iv));
+
+	$id1 = $json->idusuario_a; $id2 = $json->idusuario_b;
 
 	$response["status"] = 1;
 	$dbh = getConnection();
@@ -113,13 +135,17 @@ function deleteFriendship() {
 	$stmt->execute();
 
 	closeConnection($dbh);
-	echo json_encode($response);
+	$json = json_encode($response);
+	$data = encrypt_data($appID, $json);
+	echo json_encode($data);
 }
 
-function getFriends($id1) {
+function getFriends($appID, $data, $iv) {
 
 	global $friendTable;
 	
+	$json = json_decode(decrypt_data($appID, $data, $iv));
+	$id1 = $json->idusuario_a;
 	$response["status"] = 0;
 	$dbh = getConnection();
 
@@ -141,19 +167,23 @@ function getFriends($id1) {
 		$response["status"] = 1;
 
 	closeConnection($dbh);
-	echo json_encode($response);
+	$json = json_encode($response);
+	$data = encrypt_data($appID, $json);
+	echo json_encode($data);
 }
 
-function getFriendsRequest($id1) {
+function getFriendsRequest($appID, $data, $iv) {
 
 	global $friendTable;
 	
+	$json = json_decode(decrypt_data($appID, $data, $iv));
+	$id1 = $json->idusuario_a;
 	$response["status"] = 0;
 	$dbh = getConnection();
 
 	$sql = "SELECT idusuario, nome, email, addressLat, addressLong, imagePath
 				from usuario, (SELECT idusuario_b AS friend FROM $friendTable
-					WHERE idusuario_a = :id1 and status = 1 UNION SELECT
+					WHERE idusuario_a = :id1 and status = 0 UNION SELECT
 						idusuario_a AS friend FROM $friendTable WHERE
 							idusuario_b = :id1 and status = 0) as tmp WHERE
 													idusuario = tmp.friend";
@@ -169,7 +199,9 @@ function getFriendsRequest($id1) {
 		$response["status"] = 1;
 
 	closeConnection($dbh);
-	echo json_encode($response);
+	$json = json_encode($response);
+	$data = encrypt_data($appID, $json);
+	echo json_encode($data);
 }
 
 ?>

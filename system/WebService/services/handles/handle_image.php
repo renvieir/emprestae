@@ -29,9 +29,10 @@ function checkImageType ($image_binary) {
 	return (in_array($type, $ext)) ? 1 : 0;
 }
 
+/* adiciona imagem no banco */
 function createImage($elem, $image64, $isUser) {
 
-	$path = "www.services.emprestae.com";
+	$path = "http://www.services.emprestae.com";
 	$localPath = "services/images/";
 	$localPath .= ($isUser) ? "users/" : "objects/";
 
