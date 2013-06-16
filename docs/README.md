@@ -1,3 +1,3 @@
 docs
 =========
-pasta destinada a documentos do projeto
+pasta destinada a documentção do projeto

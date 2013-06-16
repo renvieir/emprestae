@@ -1,3 +1,3 @@
 system
 =========
-pasta destinada ao sistema em si
+pasta destinada ao código fonte do projeto
